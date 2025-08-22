@@ -830,14 +830,12 @@
     </footer>
 
     <script>
-        // GitHub конфигурация
         let githubConfig = {
             token: localStorage.getItem('githubToken') || '',
             repo: localStorage.getItem('githubRepo') || '',
             branch: 'main'
         };
 
-        // Продукты - загружаются из GitHub или fallback данные
         let products = [
             {
                 title: "Custom AR-15 Build",
@@ -963,7 +961,6 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
 };
     let currentLanguage = localStorage.getItem('dexterLanguage') || 'pl';
 
-    // GitHub API функции
     async function loadProductsFromGitHub() {
         if (!githubConfig.repo) {
             showStatus('Nie skonfigurowano repozytorium GitHub', 'error');
@@ -975,7 +972,6 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
             const response = await fetch(`https://api.github.com/repos/${githubConfig.repo}/contents/products.json`);
             
             if (response.status === 404) {
-                // Файл не существует, создаем его с текущими продуктами
                 await saveProductsToGitHub();
                 showStatus('Utworzono nowy plik products.json', 'success');
             } else if (response.ok) {
@@ -1004,7 +1000,6 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
 
         showLoading(true);
         try {
-            // Pobierz SHA aktualnego pliku jeśli istnieje
             let sha = null;
             try {
                 const getResponse = await fetch(`https://api.github.com/repos/${githubConfig.repo}/contents/products.json`, {
@@ -1018,10 +1013,7 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
                     sha = existingFile.sha;
                 }
             } catch (e) {
-                // Файл не существует, это нормально
             }
-
-            // Сохрани продукты
             const content = btoa(JSON.stringify(products, null, 2));
             const payload = {
                 message: 'Update products.json',
@@ -1122,7 +1114,6 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
         document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
     }
 
-    // Функции обработки изображений
     function processImageFile(file) {
         return new Promise((resolve, reject) => {
             if (file.size > 2 * 1024 * 1024) {
@@ -1178,7 +1169,6 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
         });
     }
 
-    // UI функции
     function changeLanguage(lang) {
         currentLanguage = lang;
         localStorage.setItem('dexterLanguage', lang);
@@ -1282,7 +1272,6 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
         if (password === correctPassword) {
             document.getElementById('adminModal').style.display = 'block';
             
-            // Загрузи сохраненную конфигурацию
             document.getElementById('githubToken').value = githubConfig.token;
             document.getElementById('githubRepo').value = githubConfig.repo;
             
@@ -1300,7 +1289,6 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
         document.getElementById('adminModal').style.display = 'none';
     }
 
-    // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
         const imageInput = document.getElementById('projectImage');
         const imagePreview = document.getElementById('imagePreview');
@@ -1335,7 +1323,6 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
         changeLanguage(currentLanguage);
         renderPortfolio();
         
-        // Автоматически загружаем продукты из GitHub при старте
         if (githubConfig.repo) {
             loadProductsFromGitHub();
         }
