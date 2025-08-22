@@ -670,10 +670,10 @@
             </div>
 
             <div class="project-form">
-                <h4 style="color: #ff6600; margin-bottom: 15px;" id="addProjectTitle">Dodaj nowy projekt</h4>
+                <h4 style="color: #ff6600; margin-bottom: 15px;" id="addProjectTitle">Dodaj nowy produkt</h4>
                 <form id="projectForm">
                     <div class="form-group">
-                        <label id="projectNameLabel">Nazwa projektu:</label>
+                        <label id="projectNameLabel">Nazwa produktu:</label>
                         <input type="text" id="projectTitle" required>
                     </div>
                     <div class="form-group">
@@ -685,7 +685,7 @@
                         <input type="text" id="projectSpecs" placeholder="Np: Custom Barrel, Match Trigger">
                     </div>
                     <div class="form-group">
-                        <label id="imageLabel">Zdjęcie projektu:</label>
+                        <label id="imageLabel">Zdjęcie produktu:</label>
                         <input type="file" id="projectImage" accept="image/*">
                         <img id="imagePreview" class="image-preview" alt="Podgląd zdjęcia">
                         <small id="imageHelp">Maksymalny rozmiar: 2MB. Obsługiwane formaty: JPG, PNG, WebP</small>
@@ -701,7 +701,7 @@
                         <label id="yearLabel">Rok:</label>
                         <input type="number" id="projectYear" value="2025">
                     </div>
-                    <button type="submit" class="btn" id="addBtn">Dodaj projekt</button>
+                    <button type="submit" class="btn" id="addBtn">Dodaj produkt</button>
                 </form>
             </div>
 
@@ -710,7 +710,7 @@
             </div>
 
             <div class="current-projects">
-                <h4 style="color: #ff6600; margin-bottom: 15px;" id="currentProjectsTitle">Obecne projekty</h4>
+                <h4 style="color: #ff6600; margin-bottom: 15px;" id="currentProjectsTitle">Obecne produkty</h4>
                 <button class="btn" onclick="loadProductsFromGitHub()" id="refreshBtn">Odśwież z GitHub</button>
                 <div id="projectsList"></div>
             </div>
@@ -724,7 +724,6 @@
                     <div class="logo-icon">
                         <img src="logo.svg" alt="Dexter Logo">
                     </div>
-                    <div class="logo-text">Dexter</div>
                 </div>
                 <nav>
                     <ul class="nav-links">
@@ -755,9 +754,9 @@
             <div class="about-grid">
                 <div class="about-text">
                     <h2 id="aboutTitle">O mojej pracy</h2>
-                    <p id="aboutText1">Specjalizuję się w tworzeniu indywidualnej broni, każdy element jest unikalny i wykonany z precyzją. Od indywidualnych montaży po modyfikacje, każy projekt realizowany jest z dbałością o szczegóły.</p>
+                    <p id="aboutText1">Specjalizuję się w tworzeniu indywidualnej broni, każdy element jest unikalny i wykonany z precyzją. Od indywidualnych montaży po modyfikacje, każy produkt realizowany jest z dbałością o szczegóły.</p>
                     <p id="aboutText2">Moja praca obejmuje różne typy broni i modyfikacji. Nie prowadzę stałego inwentarza - każdy element jest wykonywany na zamówienie lub tworzony jako unikalne dzieło na sprzedaż.</p>
-                    <p id="aboutText3">Wysokiej jakości rzemiosło i precyzja to podstawa mojej pracy. Każdy projekt to pokaz umiejętności technicznych i wizji artystycznej.</p>
+                    <p id="aboutText3">Wysokiej jakości rzemiosło i precyzja to podstawa mojej pracy. Każdy produkt to pokaz umiejętności technicznych i wizji artystycznej.</p>
                 </div>
                 <div class="about-image">
                     Workshop Photo
@@ -874,9 +873,9 @@
                 heroDescription: "Tworzę unikalne, precyzyjne broń z dbałością o szczegóły. Każdy element jest wykonywany na zamówienie lub jako unikalne dzieło.",
                 heroButton: "Zobacz prace",
                 aboutTitle: "O mojej pracy",
-                aboutText1: "Specjalizuję się w tworzeniu indywidualnej broni, każdy element jest unikalny i wykonany z precyzją. Od indywidualnych montaży po modyfikacje, każdy projekt realizowany jest z dbałością o szczegóły.",
+                aboutText1: "Specjalizuję się w tworzeniu indywidualnej broni, każdy element jest unikalny i wykonany z precyzją. Od indywidualnych montaży po modyfikacje, każdy produkt realizowany jest z dbałością o szczegóły.",
                 aboutText2: "Moja praca obejmuje różne typy broni i modyfikacji. Nie prowadzę stałego inwentarza - każdy element jest wykonywany na zamówienie lub tworzony jako unikalne dzieło na sprzedaż.",
-                aboutText3: "Wysokiej jakości rzemiosło i precyzja to podstawa mojej pracy. Każdy projekt to pokaz umiejętności technicznych i wizji artystycznej.",
+                aboutText3: "Wysokiej jakości rzemiosło i precyzja to podstawa mojej pracy. Każdy produkt to pokaz umiejętności technicznych i wizji artystycznej.",
 portfolioTitle: "Moje prace",
 portfolioSubtitle: "Wystawa indywidualnych montaży i modyfikacji. Każdy element reprezentuje unikalne rzemiosło i dbałość o szczegóły.",
 contactTitle: "Kontakt",
@@ -895,15 +894,15 @@ githubRepoLabel: "Nazwa repozytorium:",
 githubRepoHelp: "Format: username/repository-name",
 testConnectionBtn: "Testuj połączenie",
 saveConfigBtn: "Zapisz konfigurację",
-addProjectTitle: "Dodaj nowy projekt",
-projectNameLabel: "Nazwa projektu:",
+addProjectTitle: "Dodaj nowy produkt",
+projectNameLabel: "Nazwa produktu:",
 descriptionLabel: "Opis:",
 specsLabel: "Specyfikacje (oddzielone przecinkami):",
-imageLabel: "Zdjęcie projektu:",
+imageLabel: "Zdjęcie produktu:",
 statusLabel: "Status:",
 yearLabel: "Rok:",
-addBtn: "Dodaj projekt",
-currentProjectsTitle: "Obecne projekty",
+addBtn: "Dodaj produkt",
+currentProjectsTitle: "Obecne produkty",
 refreshBtn: "Odśwież z GitHub",
 statusAvailableOption: "Dostępne do zakupu",
 statusSoldOption: "Sprzedane",
@@ -921,9 +920,9 @@ heroSubtitle: "Custom Gunsmith Services",
 heroDescription: "Crafting unique, precision firearms with attention to detail. Each piece is custom-made to order or available as one-of-a-kind creations.",
 heroButton: "View My Work",
 aboutTitle: "About My Work",
-aboutText1: "I specialize in creating custom firearms, each one unique and crafted with precision. From custom builds to modifications, every project is approached with meticulous attention to detail.",
+aboutText1: "I specialize in creating custom firearms, each one unique and crafted with precision. From custom builds to modifications, every product is approached with meticulous attention to detail.",
 aboutText2: "My work spans various types of firearms and modifications. I don't maintain a permanent inventory - each piece is either custom-made to order or created as a unique piece for sale.",
-aboutText3: "Quality craftsmanship and precision are the cornerstones of my work. Every project is a showcase of technical skill and artistic vision.",
+aboutText3: "Quality craftsmanship and precision are the cornerstones of my work. Every product is a showcase of technical skill and artistic vision.",
 portfolioTitle: "My Work",
 portfolioSubtitle: "A showcase of custom builds and modifications. Each piece represents unique craftsmanship and attention to detail.",
 contactTitle: "Contact",
@@ -942,15 +941,15 @@ githubRepoLabel: "Repository name:",
 githubRepoHelp: "Format: username/repository-name",
 testConnectionBtn: "Test connection",
 saveConfigBtn: "Save configuration",
-addProjectTitle: "Add new project",
-projectNameLabel: "Project name:",
+addProjectTitle: "Add new product",
+projectNameLabel: "product name:",
 descriptionLabel: "Description:",
 specsLabel: "Specifications (comma separated):",
-imageLabel: "Project image:",
+imageLabel: "product image:",
 statusLabel: "Status:",
 yearLabel: "Year:",
-addBtn: "Add project",
-currentProjectsTitle: "Current projects",
+addBtn: "Add product",
+currentProjectsTitle: "Current products",
 refreshBtn: "Refresh from GitHub",
 statusAvailableOption: "Available for purchase",
 statusSoldOption: "Sold",
@@ -1204,7 +1203,7 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
             
             const imageContent = product.image ? 
                 `<img src="${product.image}" alt="${product.title}">` : 
-                'Project Photo';
+                'product Photo';
             
             productElement.innerHTML = `
                 <div class="portfolio-image">${imageContent}</div>
@@ -1249,8 +1248,8 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
 
     async function removeProduct(index) {
         const confirmText = currentLanguage === 'pl' ? 
-            'Czy na pewno chcesz usunąć ten projekt?' : 
-            'Are you sure you want to delete this project?';
+            'Czy na pewno chcesz usunąć ten produkt?' : 
+            'Are you sure you want to delete this product?';
         
         if (confirm(confirmText)) {
             products.splice(index, 1);
@@ -1344,8 +1343,8 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
         this.reset();
         imagePreview.style.display = 'none';
         const successText = currentLanguage === 'pl' ? 
-            'Projekt dodany pomyślnie!' : 
-            'Project added successfully!';
+            'produkt dodany pomyślnie!' : 
+            'product added successfully!';
         showStatus(successText, 'success');
     });
 
