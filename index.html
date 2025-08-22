@@ -1013,7 +1013,7 @@ imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
                 }
             } catch (e) {
             }
-            const content = btoa(JSON.stringify(products, null, 2));
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(products, null, 2))));
             const payload = {
                 message: 'Update products.json',
                 content: content,
