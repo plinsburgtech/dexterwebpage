@@ -1,19 +1,7 @@
 [
   {
-    "title": "Custom AR-15 Build",
-    "description": "Kompletna niestandardowa konstrukcja z precyzyjną lufą, niestandardową grupą spustową i specjalistycznym systemem montażu optyki.",
-    "specs": [
-      "Custom Barrel",
-      "Match Trigger",
-      "Precision Optics"
-    ],
-    "status": "sold",
-    "year": "2024",
-    "image": null
-  },
-  {
     "title": "Modified Precision Rifle",
-    "description": "Karabin snajperski dalekiego zasięgu z niestandardową kolbą, ulepszoną spustową i specjalistyczną obróbką lufy.",
+    "description": "Karabin snajperski dalekiego zasiÄgu z niestandardowÄ kolbÄ, ulepszonÄ spustowÄ i specjalistycznÄ obrÃ³bkÄ lufy.",
     "specs": [
       "Long Range",
       "Custom Stock",
@@ -25,7 +13,7 @@
   },
   {
     "title": "Tactical Shotgun Modification",
-    "description": "Modyfikacje taktyczne obejmujące niestandardowe wyposażenie, ulepszony system ładowania i celowniki precyzyjne.",
+    "description": "Modyfikacje taktyczne obejmujÄce niestandardowe wyposaÅ¼enie, ulepszony system Åadowania i celowniki precyzyjne.",
     "specs": [
       "Tactical",
       "Custom Furniture",
