@@ -51,7 +51,7 @@ const translations = {
         statusAvailableOption: "Dostępne do zakupu",
         statusSoldOption: "Sprzedane",
         deleteBtn: "Usuń",
-        footerText: "© 2025 Dexter. Usługi rusznikarskie w Krakowie.",
+        footerText: "© 2025 SERWIS DEXTERA JACEK REITER. Serwis sprzętu sportowego w Krakowie.",
         imageHelp: "Maksymalny rozmiar: 2MB. Obsługiwane formaty: JPG, PNG, WebP"
     },
     en: {
@@ -98,7 +98,7 @@ const translations = {
         statusAvailableOption: "Available for purchase",
         statusSoldOption: "Sold",
         deleteBtn: "Delete",
-        footerText: "© 2025 Dexter. Custom gunsmith services in Kraków.",
+        footerText: "© 2025 DEXTER SERVICE JACEK REITER. Sports equipment service in Kraków.",
         imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
     }
 };
