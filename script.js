@@ -1,36 +1,10 @@
-// Global variables
 let githubConfig = {
     token: localStorage.getItem('githubToken') || '',
     repo: localStorage.getItem('githubRepo') || '',
     branch: 'main'
 };
 
-let products = [
-    {
-        title: "Custom AR-15 Build",
-        description: "Kompletna niestandardowa konstrukcja z precyzyjną lufą, niestandardową grupą spustową i specjalistycznym systemem montażu optyki.",
-        specs: ["Custom Barrel", "Match Trigger", "Precision Optics"],
-        status: "sold",
-        year: "2024",
-        image: null
-    },
-    {
-        title: "Modified Precision Rifle",
-        description: "Karabin snajperski dalekiego zasięgu z niestandardową kolbą, ulepszoną spustową i specjalistyczną obróbką lufy.",
-        specs: ["Long Range", "Custom Stock", "Precision Barrel"],
-        status: "available",
-        year: "2024",
-        image: null
-    },
-    {
-        title: "Tactical Shotgun Modification",
-        description: "Modyfikacje taktyczne obejmujące niestandardowe wyposażenie, ulepszony system ładowania i celowniki precyzyjne.",
-        specs: ["Tactical", "Custom Furniture", "Enhanced Loading"],
-        status: "sold",
-        year: "2023",
-        image: null
-    }
-];
+let products = []; 
 
 const translations = {
     pl: {
@@ -59,7 +33,7 @@ const translations = {
         adminTitle: "Zarządzanie katalogiem produktów",
         githubConfigTitle: "Konfiguracja GitHub",
         githubTokenLabel: "GitHub Token:",
-        githubTokenHelp: "Potrzebny do zapisywania zmian. Utwórz w GitHub Settings > Developer settings > Personal access tokens",
+        githubTokenHelp: "Potrzebny do zapisywania zmian. Utwórz CLASSIC token w GitHub Settings > Developer settings > Personal access tokens (classic) z uprawnieniami 'repo'",
         githubRepoLabel: "Nazwa repozytorium:",
         githubRepoHelp: "Format: username/repository-name",
         testConnectionBtn: "Testuj połączenie",
@@ -106,7 +80,7 @@ const translations = {
         adminTitle: "Product Catalog Management",
         githubConfigTitle: "GitHub Configuration",
         githubTokenLabel: "GitHub Token:",
-        githubTokenHelp: "Required for saving changes. Create in GitHub Settings > Developer settings > Personal access tokens",
+        githubTokenHelp: "Required for saving changes. Create CLASSIC token in GitHub Settings > Developer settings > Personal access tokens (classic) with 'repo' permissions",
         githubRepoLabel: "Repository name:",
         githubRepoHelp: "Format: username/repository-name",
         testConnectionBtn: "Test connection",
@@ -132,47 +106,57 @@ const translations = {
 let currentLanguage = localStorage.getItem('dexterLanguage') || 'pl';
 
 async function loadProductsFromGitHub() {
-    if (!githubConfig.repo) {
-        showStatus('Nie skonfigurowano repozytorium GitHub', 'error');
-        return;
-    }
-
-    showLoading(true);
+    const repo = githubConfig.repo || 'mmiki057/dexterwebpage';
+    
     try {
-        const response = await fetch(`https://api.github.com/repos/${githubConfig.repo}/contents/products.json`);
+        const headers = {
+            'Accept': 'application/vnd.github.v3+json'
+        };
         
-        if (response.status === 404) {
-            await saveProductsToGitHub();
-            showStatus('Utworzono nowy plik products.json', 'success');
-        } else if (response.ok) {
+        if (githubConfig.token) {
+            headers['Authorization'] = `token ${githubConfig.token}`;
+        }
+
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json`, {
+            headers: headers
+        });
+        
+        if (response.ok) {
             const data = await response.json();
             const content = atob(data.content);
             products = JSON.parse(content);
             renderPortfolio();
             renderProjectsList();
-            showStatus('Produkty załadowane z GitHub', 'success');
+            console.log('Продукты загружены из GitHub');
+        } else if (response.status === 404) {
+            products = [];
+            renderPortfolio();
+            renderProjectsList();
+            console.log('Файл products.json не найден');
         } else {
-            throw new Error(`HTTP ${response.status}`);
+            console.warn(`GitHub API вернул ${response.status}, используем пустой массив`);
+            products = [];
+            renderPortfolio();
+            renderProjectsList();
         }
     } catch (error) {
-        console.error('Error loading from GitHub:', error);
-        showStatus(`Błąd ładowania z GitHub: ${error.message}`, 'error');
-    } finally {
-        showLoading(false);
+        console.error('Ошибка загрузки из GitHub:', error);
+        products = [];
+        renderPortfolio();
+        renderProjectsList();
     }
 }
 
 async function saveProductsToGitHub() {
     if (!githubConfig.token || !githubConfig.repo) {
-        console.log('GitHub not configured - missing token or repo');
         showStatus('Brak konfiguracji GitHub', 'error');
         return false;
     }
 
-    console.log('Saving to GitHub:', githubConfig.repo);
     showLoading(true);
     try {
         let sha = null;
+        
         try {
             const getResponse = await fetch(`https://api.github.com/repos/${githubConfig.repo}/contents/products.json`, {
                 headers: {
@@ -180,27 +164,26 @@ async function saveProductsToGitHub() {
                     'Accept': 'application/vnd.github.v3+json'
                 }
             });
+            
             if (getResponse.ok) {
                 const existingFile = await getResponse.json();
                 sha = existingFile.sha;
-                console.log('Found existing file with SHA:', sha);
             }
         } catch (e) {
-            console.log('File does not exist yet, will create new');
+            console.log('Файл не существует, создаем новый');
         }
-
+        
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(products, null, 2))));
+        
         const payload = {
-            message: 'Update products.json',
+            message: `Update products.json - ${new Date().toISOString()}`,
             content: content,
-            branch: githubConfig.branch
+            branch: githubConfig.branch || 'main'
         };
-
+        
         if (sha) {
             payload.sha = sha;
         }
-
-        console.log('Sending payload to GitHub:', payload);
 
         const response = await fetch(`https://api.github.com/repos/${githubConfig.repo}/contents/products.json`, {
             method: 'PUT',
@@ -213,16 +196,15 @@ async function saveProductsToGitHub() {
         });
 
         if (response.ok) {
-            console.log('Successfully saved to GitHub');
             showStatus('Produkty zapisane do GitHub', 'success');
             return true;
         } else {
-            const errorText = await response.text();
-            console.error('GitHub API error:', response.status, errorText);
-            throw new Error(`HTTP ${response.status}: ${errorText}`);
+            const errorData = await response.text();
+            console.error('GitHub API error:', response.status, errorData);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
     } catch (error) {
-        console.error('Error saving to GitHub:', error);
+        console.error('Ошибка сохранения в GitHub:', error);
         showStatus(`Błąd zapisu do GitHub: ${error.message}`, 'error');
         return false;
     } finally {
@@ -249,9 +231,22 @@ async function testGitHubConnection() {
         });
 
         if (response.ok) {
-            showStatus('Połączenie z GitHub działa!', 'success');
+            const testResponse = await fetch(`https://api.github.com/repos/${repo}/contents/test.json`, {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            
+            if (testResponse.status === 404) {
+                showStatus('Połączenie z GitHub działa! Token ma odpowiednie uprawnienia.', 'success');
+            } else if (testResponse.status === 403) {
+                showStatus('Połączenie działa, ale brak uprawnień do zapisu. Użyj CLASSIC token z uprawnieniami "repo".', 'error');
+            } else {
+                showStatus('Połączenie z GitHub działa!', 'success');
+            }
         } else {
-            throw new Error(`HTTP ${response.status}`);
+            throw new Error(`HTTP ${response.status} - ${response.statusText}`);
         }
     } catch (error) {
         console.error('GitHub connection test failed:', error);
@@ -344,7 +339,7 @@ function processImageFile(file) {
             };
             img.src = e.target.result;
         };
-        reader.onerror = () => reject('Błąd przy czytaniu pliku');
+        reader.onerror = () => reject('Ошибка при чтении файла');
         reader.readAsDataURL(file);
     });
 }
@@ -360,16 +355,12 @@ function changeLanguage(lang) {
         document.getElementById('langEn').classList.add('active');
     }
     
-    if (translations[lang] && typeof translations[lang] === 'object') {
-        Object.keys(translations[lang]).forEach(key => {
-            const element = document.getElementById(key);
-            if (element) {
-                element.textContent = translations[lang][key];
-            }
-        });
-    } else {
-        console.error('Translations not found for language:', lang);
-    }
+    Object.keys(translations[lang]).forEach(key => {
+        const element = document.getElementById(key);
+        if (element) {
+            element.textContent = translations[lang][key];
+        }
+    });
     
     renderPortfolio();
     renderProjectsList();
@@ -425,22 +416,10 @@ function renderProjectsList() {
 }
 
 async function addProduct(productData) {
-    console.log('Adding product:', productData);
     products.push(productData);
-    console.log('Products array after adding:', products);
-    
+    await saveProductsToGitHub();
     renderPortfolio();
     renderProjectsList();
-    
-    if (githubConfig.token && githubConfig.repo) {
-        const success = await saveProductsToGitHub();
-        if (!success) {
-            console.log('GitHub save failed, but product is still added locally');
-        }
-    } else {
-        console.log('GitHub not configured, product added locally only');
-        showStatus('Продукт добавлен локально (GitHub не настроен)', 'success');
-    }
 }
 
 async function removeProduct(index) {
@@ -450,12 +429,9 @@ async function removeProduct(index) {
     
     if (confirm(confirmText)) {
         products.splice(index, 1);
+        await saveProductsToGitHub();
         renderPortfolio();
         renderProjectsList();
-        
-        if (githubConfig.token && githubConfig.repo) {
-            await saveProductsToGitHub();
-        }
     }
 }
 
@@ -520,49 +496,80 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     changeLanguage(currentLanguage);
-    renderPortfolio();
+
+    loadProductsFromGitHub();
+});
+
+document.getElementById('projectForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
     
-    if (githubConfig.repo) {
-        loadProductsFromGitHub();
+    const title = document.getElementById('projectTitle').value;
+    const description = document.getElementById('projectDescription').value;
+    const specs = document.getElementById('projectSpecs').value.split(',').map(s => s.trim()).filter(s => s);
+    const status = document.getElementById('projectStatus').value;
+    const year = document.getElementById('projectYear').value;
+    const imagePreview = document.getElementById('imagePreview');
+    const image = imagePreview.style.display === 'block' ? imagePreview.src : null;
+
+    await addProduct({ title, description, specs, status, year, image });
+    
+    this.reset();
+    imagePreview.style.display = 'none';
+    const successText = currentLanguage === 'pl' ? 
+        'Produkt dodany pomyślnie!' : 
+        'Product added successfully!';
+    showStatus(successText, 'success');
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('adminModal')) {
+        closeAdminPanel();
     }
+});
 
-    document.getElementById('projectForm').addEventListener('submit', async function(e) {
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        
-        const title = document.getElementById('projectTitle').value;
-        const description = document.getElementById('projectDescription').value;
-        const specs = document.getElementById('projectSpecs').value.split(',').map(s => s.trim()).filter(s => s);
-        const status = document.getElementById('projectStatus').value;
-        const year = document.getElementById('projectYear').value;
-        const imagePreview = document.getElementById('imagePreview');
-        const image = imagePreview.style.display === 'block' ? imagePreview.src : null;
-
-        await addProduct({ title, description, specs, status, year, image });
-        
-        this.reset();
-        imagePreview.style.display = 'none';
-        const successText = currentLanguage === 'pl' ? 
-            'Produkt dodany pomyślnie!' : 
-            'Product added successfully!';
-        showStatus(successText, 'success');
-    });
-
-    document.addEventListener('click', function(e) {
-        if (e.target === document.getElementById('adminModal')) {
-            closeAdminPanel();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
         }
     });
+});
 
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
+document.addEventListener("DOMContentLoaded", () => {
+    const path = window.location.pathname.toLowerCase();
+
+    const adminRedirectPaths = [
+        '/pl/admin',
+        '/en/admin',
+        '/pl/zarzadzanie',
+        '/en/zarzadzanie'
+    ];
+
+    if (adminRedirectPaths.includes(path)) {
+        window.location.replace('/admin');
+        return;
+    }
+
+    const adminPanel = document.querySelector(".admin-panel");
+    const langSwitcher = document.querySelector(".language-switcher");
+
+    if (langSwitcher) langSwitcher.style.display = "block";
+
+    if (adminPanel) adminPanel.style.display = "none";
+
+    if (path === "/admin" || path === "/admin.html") {
+        if (adminPanel) adminPanel.style.display = "block";
+    }
+
+    if (path === "/pl" || path === "/pl.html") changeLanguage("pl");
+    else if (path === "/en" || path === "/en.html") changeLanguage("en");
+    else changeLanguage(currentLanguage);
+
+    document.getElementById("langPl").onclick = () => window.location.pathname = "/pl";
+    document.getElementById("langEn").onclick = () => window.location.pathname = "/en";
 });

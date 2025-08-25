@@ -1,0 +1,27 @@
+{
+  "routes": [
+    {
+      "route": "/pl/admin",
+      "redirect": "/admin",
+      "statusCode": 301
+    },
+    {
+      "route": "/en/admin",
+      "redirect": "/admin",
+      "statusCode": 301
+    },
+    {
+      "route": "/pl/zarzadzanie",
+      "redirect": "/admin",
+      "statusCode": 301
+    },
+    {
+      "route": "/en/zarzadzanie",
+      "redirect": "/admin",
+      "statusCode": 301
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html"
+  }
+}
