@@ -190,32 +190,20 @@ async function loadProductsFromGitHub() {
         return;
     }
     
-    const cacheBuster = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const cacheBuster = Date.now();
     
     try {
-        if ('caches' in window) {
-            const cacheNames = await caches.keys();
-            await Promise.all(cacheNames.map(name => caches.delete(name)));
-        }
-        
         const headers = {
-            'Accept': 'application/vnd.github.v3+json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-            'Pragma': 'no-cache',
-            'Expires': '-1',
-            'If-None-Match': '',
-            'If-Modified-Since': 'Thu, 01 Jan 1970 00:00:00 GMT'
+            'Accept': 'application/vnd.github.v3+json'
         };
         
         if (githubConfig.token) {
             headers['Authorization'] = `token ${githubConfig.token}`;
         }
 
-        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json?cache=${cacheBuster}&t=${Date.now()}&r=${Math.random()}`, {
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json?_=${cacheBuster}`, {
             method: 'GET',
-            headers: headers,
-            cache: 'no-store',
-            mode: 'cors'
+            headers: headers
         });
         
         if (response.ok) {
@@ -227,7 +215,7 @@ async function loadProductsFromGitHub() {
             renderPortfolio();
             renderProjectsList();
             
-            console.log(`Принудительное обновление: ${new Date().toLocaleTimeString()}`);
+            console.log(`Обновление: ${new Date().toLocaleTimeString()}`);
             console.log(`Загружено продуктов: ${products.length}`);
             
             lastFileSha = data.sha;
@@ -243,17 +231,62 @@ async function loadProductsFromGitHub() {
             throw new Error(`GitHub API error: ${response.status}`);
         }
     } catch (error) {
-        console.error('Критическая ошибка загрузки:', error);
+        console.error('Ошибка загрузки:', error);
         
         try {
-            await loadThroughProxy();
-        } catch (proxyError) {
-            console.error('Прокси тоже не помог:', proxyError);
+            await loadThroughJSDelivr();
+        } catch (cdnError) {
+            console.error('CDN тоже не помог:', cdnError);
             products = [];
             renderPortfolio();
             renderProjectsList();
         }
     }
+}
+
+async function loadThroughJSDelivr() {
+    const repo = githubConfig.repo;
+    
+    if (!repo) {
+        throw new Error('Репозиторий не настроен');
+    }
+    
+    const cacheBuster = Date.now();
+    const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@main/products.json?_=${cacheBuster}`;
+    
+    try {
+        const response = await fetch(cdnUrl);
+        
+        if (response.ok) {
+            const content = await response.text();
+            products = JSON.parse(content);
+            renderPortfolio();
+            renderProjectsList();
+            console.log(`Загружено через JSDelivr CDN: ${products.length} продуктов`);
+            return;
+        } else {
+            throw new Error(`CDN error: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('JSDelivr CDN ошибка:', error);
+        throw error;
+    }
+}
+
+async function simpleUpdate() {
+    console.log('Запуск простого обновления...');
+    await loadProductsFromGitHub();
+}
+
+function forceRefreshProducts() {
+    lastETag = null;
+    lastFileSha = null;
+    localStorage.removeItem('lastProductsSha');
+    localStorage.removeItem('lastSmartUpdate');
+    
+    simpleUpdate();
+    
+    showStatus('Каталог обновлен', 'success');
 }
 
 async function smartHourlyUpdate() {
