@@ -4,8 +4,7 @@ let githubConfig = {
     branch: 'main'
 };
 
-let products = [];
-let currentLanguage = localStorage.getItem('dexterLanguage') || 'pl';
+let products = []; 
 
 const translations = {
     pl: {
@@ -102,27 +101,44 @@ const translations = {
     }
 };
 
+let currentLanguage = localStorage.getItem('dexterLanguage') || 'pl';
+
 async function loadProductsFromGitHub() {
-    if (!githubConfig.repo) {
-        console.error('Репозиторий не настроен');
-        return;
-    }
+    const repo = githubConfig.repo || 'plinsburgtech/dexterwebpage';
     
     try {
-        const cdnUrl = `https://cdn.jsdelivr.net/gh/${githubConfig.repo}@main/products.json?t=${Date.now()}`;
-        const response = await fetch(cdnUrl);
+        const headers = {
+            'Accept': 'application/vnd.github.v3+json'
+        };
+        
+        if (githubConfig.token) {
+            headers['Authorization'] = `token ${githubConfig.token}`;
+        }
+
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json`, {
+            headers: headers
+        });
         
         if (response.ok) {
-            const content = await response.text();
+            const data = await response.json();
+            const content = atob(data.content);
             products = JSON.parse(content);
             renderPortfolio();
             renderProjectsList();
-            console.log(`Загружено продуктов: ${products.length}`);
+            console.log('Продукты загружены из GitHub');
+        } else if (response.status === 404) {
+            products = [];
+            renderPortfolio();
+            renderProjectsList();
+            console.log('Файл products.json не найден');
         } else {
-            throw new Error(`CDN error: ${response.status}`);
+            console.warn(`GitHub API вернул ${response.status}, используем пустой массив`);
+            products = [];
+            renderPortfolio();
+            renderProjectsList();
         }
     } catch (error) {
-        console.error('Ошибка загрузки:', error);
+        console.error('Ошибка загрузки из GitHub:', error);
         products = [];
         renderPortfolio();
         renderProjectsList();
@@ -213,7 +229,20 @@ async function testGitHubConnection() {
         });
 
         if (response.ok) {
-            showStatus('Połączenie z GitHub działa!', 'success');
+            const testResponse = await fetch(`https://api.github.com/repos/${repo}/contents/test.json`, {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            
+            if (testResponse.status === 404) {
+                showStatus('Połączenie z GitHub działa! Token ma odpowiednie uprawnienia.', 'success');
+            } else if (testResponse.status === 403) {
+                showStatus('Połączenie działa, ale brak uprawnień do zapisu. Użyj CLASSIC token z uprawnieniami "repo".', 'error');
+            } else {
+                showStatus('Połączenie z GitHub działa!', 'success');
+            }
         } else {
             throw new Error(`HTTP ${response.status} - ${response.statusText}`);
         }
@@ -245,8 +274,6 @@ function saveGitHubConfig() {
 
 function showStatus(message, type) {
     const indicator = document.getElementById('statusIndicator');
-    if (!indicator) return;
-    
     indicator.textContent = message;
     indicator.className = `status-indicator status-${type}`;
     indicator.style.display = 'block';
@@ -257,10 +284,7 @@ function showStatus(message, type) {
 }
 
 function showLoading(show) {
-    const spinner = document.getElementById('loadingSpinner');
-    if (spinner) {
-        spinner.style.display = show ? 'block' : 'none';
-    }
+    document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
 }
 
 function processImageFile(file) {
@@ -324,11 +348,9 @@ function changeLanguage(lang) {
     
     document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
     if (lang === 'pl') {
-        const plBtn = document.getElementById('langPl');
-        if (plBtn) plBtn.classList.add('active');
+        document.getElementById('langPl').classList.add('active');
     } else if (lang === 'en') {
-        const enBtn = document.getElementById('langEn');
-        if (enBtn) enBtn.classList.add('active');
+        document.getElementById('langEn').classList.add('active');
     }
     
     Object.keys(translations[lang]).forEach(key => {
@@ -344,8 +366,6 @@ function changeLanguage(lang) {
 
 function renderPortfolio() {
     const grid = document.getElementById('portfolioGrid');
-    if (!grid) return;
-    
     grid.innerHTML = '';
 
     products.forEach((product, index) => {
@@ -377,8 +397,6 @@ function renderPortfolio() {
 
 function renderProjectsList() {
     const list = document.getElementById('projectsList');
-    if (!list) return;
-    
     list.innerHTML = '';
 
     products.forEach((product, index) => {
@@ -425,14 +443,10 @@ function openAdminPanel() {
     const correctPassword = 'dexter2025';
     
     if (password === correctPassword) {
-        const modal = document.getElementById('adminModal');
-        if (modal) modal.style.display = 'block';
+        document.getElementById('adminModal').style.display = 'block';
         
-        const tokenInput = document.getElementById('githubToken');
-        const repoInput = document.getElementById('githubRepo');
-        
-        if (tokenInput) tokenInput.value = githubConfig.token;
-        if (repoInput) repoInput.value = githubConfig.repo;
+        document.getElementById('githubToken').value = githubConfig.token;
+        document.getElementById('githubRepo').value = githubConfig.repo;
         
         renderProjectsList();
     } else if (password !== null) {
@@ -445,31 +459,7 @@ function openAdminPanel() {
 }
 
 function closeAdminPanel() {
-    const modal = document.getElementById('adminModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function getHeaderOffset() {
-    const header = document.querySelector('header');
-    if (!header) return 100;
-    
-    const isMobile = window.innerWidth <= 768;
-    const baseOffset = header.offsetHeight;
-    
-    return isMobile ? baseOffset + 40 : baseOffset + 20;
-}
-
-function smoothScrollTo(targetId) {
-    const target = document.querySelector(targetId);
-    if (!target) return;
-    
-    const offset = getHeaderOffset();
-    const targetPosition = target.offsetTop - offset;
-    
-    window.scrollTo({
-        top: Math.max(0, targetPosition),
-        behavior: 'smooth'
-    });
+    document.getElementById('adminModal').style.display = 'none';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -496,67 +486,56 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+    if (currentLanguage === 'pl') {
+        document.getElementById('langPl').classList.add('active');
+    } else if (currentLanguage === 'en') {
+        document.getElementById('langEn').classList.add('active');
+    }
+    
     changeLanguage(currentLanguage);
+
     loadProductsFromGitHub();
-    
-    setInterval(loadProductsFromGitHub, 600000);
-    
-    const projectForm = document.getElementById('projectForm');
-    if (projectForm) {
-        projectForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const title = document.getElementById('projectTitle').value;
-            const description = document.getElementById('projectDescription').value;
-            const specs = document.getElementById('projectSpecs').value.split(',').map(s => s.trim()).filter(s => s);
-            const status = document.getElementById('projectStatus').value;
-            const year = document.getElementById('projectYear').value;
-            const imagePreview = document.getElementById('imagePreview');
-            const image = imagePreview && imagePreview.style.display === 'block' ? imagePreview.src : null;
+});
 
-            await addProduct({ title, description, specs, status, year, image });
-            
-            this.reset();
-            if (imagePreview) imagePreview.style.display = 'none';
-            const successText = currentLanguage === 'pl' ? 
-                'Produkt dodany pomyślnie!' : 
-                'Product added successfully!';
-            showStatus(successText, 'success');
-        });
-    }
+document.getElementById('projectForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
     
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            
-            const targetId = this.getAttribute('href');
-            
-            if (targetId === '#' || targetId === '#home') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                return;
-            }
-            
-            smoothScrollTo(targetId);
-            history.pushState(null, null, targetId);
-        });
-    });
+    const title = document.getElementById('projectTitle').value;
+    const description = document.getElementById('projectDescription').value;
+    const specs = document.getElementById('projectSpecs').value.split(',').map(s => s.trim()).filter(s => s);
+    const status = document.getElementById('projectStatus').value;
+    const year = document.getElementById('projectYear').value;
+    const imagePreview = document.getElementById('imagePreview');
+    const image = imagePreview.style.display === 'block' ? imagePreview.src : null;
 
-    if (window.location.hash) {
-        setTimeout(() => smoothScrollTo(window.location.hash), 200);
-    }
+    await addProduct({ title, description, specs, status, year, image });
     
-    window.addEventListener('resize', function() {
-        if (window.location.hash) {
-            setTimeout(() => smoothScrollTo(window.location.hash), 100);
-        }
-    });
+    this.reset();
+    imagePreview.style.display = 'none';
+    const successText = currentLanguage === 'pl' ? 
+        'Produkt dodany pomyślnie!' : 
+        'Product added successfully!';
+    showStatus(successText, 'success');
 });
 
 document.addEventListener('click', function(e) {
-    const adminModal = document.getElementById('adminModal');
-    if (e.target === adminModal) {
+    if (e.target === document.getElementById('adminModal')) {
         closeAdminPanel();
     }
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -578,6 +557,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const langSwitcher = document.querySelector(".language-switcher");
 
     if (langSwitcher) langSwitcher.style.display = "block";
+
     if (adminPanel) adminPanel.style.display = "none";
 
     if (path === "/admin" || path === "/admin.html") {
@@ -588,9 +568,6 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (path === "/en" || path === "/en.html") changeLanguage("en");
     else changeLanguage(currentLanguage);
 
-    const plBtn = document.getElementById("langPl");
-    const enBtn = document.getElementById("langEn");
-    
-    if (plBtn) plBtn.onclick = () => window.location.pathname = "/pl";
-    if (enBtn) enBtn.onclick = () => window.location.pathname = "/en";
+    document.getElementById("langPl").onclick = () => window.location.pathname = "/pl";
+    document.getElementById("langEn").onclick = () => window.location.pathname = "/en";
 });
