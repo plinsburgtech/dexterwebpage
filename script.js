@@ -745,41 +745,38 @@ function addRefreshButton() {
     document.body.appendChild(refreshButton);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const imageInput = document.getElementById('projectImage');
-    const imagePreview = document.getElementById('imagePreview');
+document.addEventListener("DOMContentLoaded", () => {
+    const path = window.location.pathname.toLowerCase();
 
-    if (imageInput && imagePreview) {
-        imageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                processImageFile(file)
-                    .then(compressedImage => {
-                        imagePreview.src = compressedImage;
-                        imagePreview.style.display = 'block';
-                    })
-                    .catch(error => {
-                        alert(error);
-                        imageInput.value = '';
-                        imagePreview.style.display = 'none';
-                    });
-            } else {
-                imagePreview.style.display = 'none';
-            }
-        });
+    const adminRedirectPaths = [
+        '/pl/admin',
+        '/en/admin',
+        '/pl/zarzadzanie',
+        '/en/zarzadzanie'
+    ];
+
+    if (adminRedirectPaths.includes(path)) {
+        window.location.replace('/admin');
+        return;
     }
 
-    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-    if (currentLanguage === 'pl') {
-        const plBtn = document.getElementById('langPl');
-        if (plBtn) plBtn.classList.add('active');
-    } else if (currentLanguage === 'en') {
-        const enBtn = document.getElementById('langEn');
-        if (enBtn) enBtn.classList.add('active');
+    const adminPanel = document.querySelector(".admin-panel");
+    const langSwitcher = document.querySelector(".language-switcher");
+
+    if (langSwitcher) langSwitcher.style.display = "block";
+    if (adminPanel) adminPanel.style.display = "none";
+
+    if (path === "/admin" || path === "/admin.html") {
+        if (adminPanel) adminPanel.style.display = "block";
     }
+
+    if (path === "/pl" || path === "/pl.html") changeLanguage("pl");
+    else if (path === "/en" || path === "/en.html") changeLanguage("en");
+    else changeLanguage(currentLanguage);
+
+    const plBtn = document.getElementById("langPl");
+    const enBtn = document.getElementById("langEn");
     
-    changeLanguage(currentLanguage);
-    
-    setInterval(aggressiveUpdate, 120000);
-    
-    aggressive
+    if (plBtn) plBtn.onclick = () => window.location.pathname = "/pl";
+    if (enBtn) enBtn.onclick = () => window.location.pathname = "/en";
+});
