@@ -5,9 +5,7 @@ let githubConfig = {
 };
 
 let products = [];
-let lastETag = null;
-let lastFileSha = localStorage.getItem('lastProductsSha');
-let hourlyCacheInterval;
+let currentLanguage = localStorage.getItem('dexterLanguage') || 'pl';
 
 const translations = {
     pl: {
@@ -54,8 +52,7 @@ const translations = {
         statusSoldOption: "Sprzedane",
         deleteBtn: "Usuń",
         footerText: "© 2025 SERWIS DEXTERA JACEK REITER. Serwis sprzętu sportowego w Krakowie.",
-        imageHelp: "Maksymalny rozmiar: 2MB. Obsługiwane formaty: JPG, PNG, WebP",
-        forceRefreshBtn: "Odśwież katalog"
+        imageHelp: "Maksymalny rozmiar: 2MB. Obsługiwane formaty: JPG, PNG, WebP"
     },
     en: {
         navHome: "Home",
@@ -101,160 +98,18 @@ const translations = {
         statusSoldOption: "Sold",
         deleteBtn: "Delete",
         footerText: "© 2025 DEXTER SERVICE JACEK REITER. Sports equipment service in Kraków.",
-        imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP",
-        forceRefreshBtn: "Refresh catalog"
+        imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
     }
 };
 
-let currentLanguage = localStorage.getItem('dexterLanguage') || 'pl';
-
-function getHeaderOffset() {
-    const header = document.querySelector('header');
-    if (!header) return 100;
-    
-    const isMobile = window.innerWidth <= 768;
-    const baseOffset = header.offsetHeight;
-    
-    if (isMobile) {
-        return baseOffset + 40;
-    }
-    
-    return baseOffset + 20;
-}
-
-function adaptiveScrollToSection(targetId) {
-    const target = document.querySelector(targetId);
-    if (!target) return;
-    
-    const offset = getHeaderOffset();
-    const targetPosition = target.offsetTop - offset;
-    
-    window.scrollTo({
-        top: Math.max(0, targetPosition),
-        behavior: 'smooth'
-    });
-}
-
-async function loadThroughProxy() {
-    const repo = githubConfig.repo;
-    
-    if (!repo) {
-        throw new Error('Репозиторий не настроен');
-    }
-    
-    const endpoints = [
-        `https://raw.githubusercontent.com/${repo}/main/products.json?t=${Date.now()}`,
-        `https://api.github.com/repos/${repo}/contents/products.json?ref=main&t=${Date.now()}`,
-        `https://github.com/${repo}/raw/main/products.json?t=${Date.now()}`
-    ];
-    
-    for (const endpoint of endpoints) {
-        try {
-            const response = await fetch(endpoint, {
-                cache: 'no-store',
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache'
-                }
-            });
-            
-            if (response.ok) {
-                let content;
-                if (endpoint.includes('api.github.com')) {
-                    const data = await response.json();
-                    content = atob(data.content);
-                } else {
-                    content = await response.text();
-                }
-                
-                products = JSON.parse(content);
-                renderPortfolio();
-                renderProjectsList();
-                console.log(`Загружено через альтернативный endpoint: ${endpoint}`);
-                return;
-            }
-        } catch (error) {
-            console.log(`Endpoint ${endpoint} не работает:`, error);
-        }
-    }
-    
-    throw new Error('Все endpoints недоступны');
-}
-
 async function loadProductsFromGitHub() {
-    const repo = githubConfig.repo;
-    
-    if (!repo) {
+    if (!githubConfig.repo) {
         console.error('Репозиторий не настроен');
-        showStatus('Настройте репозиторий в админ панели', 'error');
         return;
     }
     
-    const cacheBuster = Date.now();
-    
     try {
-        const headers = {
-            'Accept': 'application/vnd.github.v3+json'
-        };
-        
-        if (githubConfig.token) {
-            headers['Authorization'] = `token ${githubConfig.token}`;
-        }
-
-        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json?_=${cacheBuster}`, {
-            method: 'GET',
-            headers: headers
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            const content = atob(data.content);
-            const newProducts = JSON.parse(content);
-            
-            products = newProducts;
-            renderPortfolio();
-            renderProjectsList();
-            
-            console.log(`Обновление: ${new Date().toLocaleTimeString()}`);
-            console.log(`Загружено продуктов: ${products.length}`);
-            
-            lastFileSha = data.sha;
-            localStorage.setItem('lastProductsSha', data.sha);
-            localStorage.setItem('lastForceUpdate', Date.now().toString());
-            
-        } else if (response.status === 404) {
-            products = [];
-            renderPortfolio();
-            renderProjectsList();
-            console.log('Файл products.json не найден');
-        } else {
-            throw new Error(`GitHub API error: ${response.status}`);
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки:', error);
-        
-        try {
-            await loadThroughJSDelivr();
-        } catch (cdnError) {
-            console.error('CDN тоже не помог:', cdnError);
-            products = [];
-            renderPortfolio();
-            renderProjectsList();
-        }
-    }
-}
-
-async function loadThroughJSDelivr() {
-    const repo = githubConfig.repo;
-    
-    if (!repo) {
-        throw new Error('Репозиторий не настроен');
-    }
-    
-    const cacheBuster = Date.now();
-    const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@main/products.json?_=${cacheBuster}`;
-    
-    try {
+        const cdnUrl = `https://cdn.jsdelivr.net/gh/${githubConfig.repo}@main/products.json?t=${Date.now()}`;
         const response = await fetch(cdnUrl);
         
         if (response.ok) {
@@ -262,156 +117,16 @@ async function loadThroughJSDelivr() {
             products = JSON.parse(content);
             renderPortfolio();
             renderProjectsList();
-            console.log(`Загружено через JSDelivr CDN: ${products.length} продуктов`);
-            return;
+            console.log(`Загружено продуктов: ${products.length}`);
         } else {
             throw new Error(`CDN error: ${response.status}`);
         }
     } catch (error) {
-        console.error('JSDelivr CDN ошибка:', error);
-        throw error;
+        console.error('Ошибка загрузки:', error);
+        products = [];
+        renderPortfolio();
+        renderProjectsList();
     }
-}
-
-async function simpleUpdate() {
-    console.log('Запуск простого обновления...');
-    await loadProductsFromGitHub();
-}
-
-function forceRefreshProducts() {
-    lastETag = null;
-    lastFileSha = null;
-    localStorage.removeItem('lastProductsSha');
-    localStorage.removeItem('lastSmartUpdate');
-    
-    simpleUpdate();
-    
-    showStatus('Каталог обновлен', 'success');
-}
-
-async function smartHourlyUpdate() {
-    const repo = githubConfig.repo;
-    
-    if (!repo) {
-        console.error('Репозиторий не настроен');
-        return;
-    }
-    
-    const now = Date.now();
-    const lastUpdate = parseInt(localStorage.getItem('lastSmartUpdate') || '0');
-    const oneHour = 3600000;
-    
-    try {
-        const headers = {
-            'Accept': 'application/vnd.github.v3+json'
-        };
-        
-        if (githubConfig.token) {
-            headers['Authorization'] = `token ${githubConfig.token}`;
-        }
-        
-        if ((now - lastUpdate) > oneHour) {
-            headers['Cache-Control'] = 'no-cache';
-            
-            const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json?_=${now}`, {
-                headers: headers,
-                cache: 'no-cache'
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                const content = atob(data.content);
-                const newProducts = JSON.parse(content);
-                
-                if (JSON.stringify(products) !== JSON.stringify(newProducts)) {
-                    products = newProducts;
-                    renderPortfolio();
-                    renderProjectsList();
-                    console.log('Каталог обновлен после очистки кэша');
-                } else {
-                    console.log('Кэш очищен, но данные не изменились');
-                }
-                
-                localStorage.setItem('lastSmartUpdate', now.toString());
-            }
-        } else {
-            loadProductsWithShaCheck();
-        }
-        
-    } catch (error) {
-        console.error('Ошибка умного обновления:', error);
-    }
-}
-
-async function loadProductsWithShaCheck() {
-    const repo = githubConfig.repo;
-    
-    if (!repo) {
-        console.error('Репозиторий не настроен');
-        return;
-    }
-    
-    try {
-        const headers = {
-            'Accept': 'application/vnd.github.v3+json'
-        };
-        
-        if (githubConfig.token) {
-            headers['Authorization'] = `token ${githubConfig.token}`;
-        }
-
-        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json`, {
-            headers: headers
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            
-            if (data.sha === lastFileSha) {
-                console.log('Данные не изменились (SHA совпадает)');
-                return;
-            }
-            
-            lastFileSha = data.sha;
-            localStorage.setItem('lastProductsSha', data.sha);
-            
-            const content = atob(data.content);
-            products = JSON.parse(content);
-            renderPortfolio();
-            renderProjectsList();
-            console.log('Продукты обновлены из GitHub');
-        } else if (response.status === 404) {
-            products = [];
-            renderPortfolio();
-            renderProjectsList();
-            console.log('Файл products.json не найден');
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки из GitHub:', error);
-    }
-}
-
-async function aggressiveUpdate() {
-    console.log('Запуск агрессивного обновления...');
-    
-    localStorage.removeItem('lastProductsSha');
-    localStorage.removeItem('lastSmartUpdate');
-    localStorage.removeItem('productsCache');
-    lastETag = null;
-    lastFileSha = null;
-    
-    await loadProductsFromGitHub();
-}
-
-function forceRefreshProducts() {
-    lastETag = null;
-    lastFileSha = null;
-    localStorage.removeItem('lastProductsSha');
-    localStorage.removeItem('lastSmartUpdate');
-    
-    loadProductsFromGitHub();
-    
-    showStatus('Каталог принудительно обновлен', 'success');
 }
 
 async function saveProductsToGitHub() {
@@ -498,20 +213,7 @@ async function testGitHubConnection() {
         });
 
         if (response.ok) {
-            const testResponse = await fetch(`https://api.github.com/repos/${repo}/contents/test.json`, {
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-            
-            if (testResponse.status === 404) {
-                showStatus('Połączenie z GitHub działa! Token ma odpowiednie uprawnienia.', 'success');
-            } else if (testResponse.status === 403) {
-                showStatus('Połączenie działa, ale brak uprawnień do zapisu. Użyj CLASSIC token z uprawnieniami "repo".', 'error');
-            } else {
-                showStatus('Połączenie z GitHub działa!', 'success');
-            }
+            showStatus('Połączenie z GitHub działa!', 'success');
         } else {
             throw new Error(`HTTP ${response.status} - ${response.statusText}`);
         }
@@ -747,35 +449,27 @@ function closeAdminPanel() {
     if (modal) modal.style.display = 'none';
 }
 
-function addRefreshButton() {
-    const refreshButton = document.createElement('button');
-    refreshButton.innerHTML = 'Odśwież katalog';
-    refreshButton.className = 'btn btn-success';
-    refreshButton.onclick = async function() {
-        this.innerHTML = 'Odświeżanie...';
-        this.disabled = true;
-        
-        await aggressiveUpdate();
-        
-        this.innerHTML = 'Odświeżono!';
-        setTimeout(() => {
-            this.innerHTML = 'Odśwież katalog';
-            this.disabled = false;
-        }, 2000);
-    };
+function getHeaderOffset() {
+    const header = document.querySelector('header');
+    if (!header) return 100;
     
-    refreshButton.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-        font-size: 14px;
-        padding: 12px 16px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    `;
+    const isMobile = window.innerWidth <= 768;
+    const baseOffset = header.offsetHeight;
     
-    document.body.appendChild(refreshButton);
+    return isMobile ? baseOffset + 40 : baseOffset + 20;
+}
+
+function smoothScrollTo(targetId) {
+    const target = document.querySelector(targetId);
+    if (!target) return;
+    
+    const offset = getHeaderOffset();
+    const targetPosition = target.offsetTop - offset;
+    
+    window.scrollTo({
+        top: Math.max(0, targetPosition),
+        behavior: 'smooth'
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -802,33 +496,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-    if (currentLanguage === 'pl') {
-        const plBtn = document.getElementById('langPl');
-        if (plBtn) plBtn.classList.add('active');
-    } else if (currentLanguage === 'en') {
-        const enBtn = document.getElementById('langEn');
-        if (enBtn) enBtn.classList.add('active');
-    }
-    
     changeLanguage(currentLanguage);
+    loadProductsFromGitHub();
     
-    setInterval(aggressiveUpdate, 120000);
-    
-    aggressiveUpdate();
-    
-    addRefreshButton();
-    
-    window.addEventListener('focus', aggressiveUpdate);
-    
-    document.addEventListener('click', function() {
-        const lastClick = localStorage.getItem('lastClickUpdate');
-        const now = Date.now();
-        if (!lastClick || (now - parseInt(lastClick)) > 60000) {
-            localStorage.setItem('lastClickUpdate', now.toString());
-            setTimeout(aggressiveUpdate, 1000);
-        }
-    });
+    setInterval(loadProductsFromGitHub, 600000);
     
     const projectForm = document.getElementById('projectForm');
     if (projectForm) {
@@ -861,35 +532,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetId = this.getAttribute('href');
             
             if (targetId === '#' || targetId === '#home') {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 return;
             }
             
-            adaptiveScrollToSection(targetId);
+            smoothScrollTo(targetId);
             history.pushState(null, null, targetId);
         });
     });
 
     if (window.location.hash) {
-        setTimeout(() => {
-            adaptiveScrollToSection(window.location.hash);
-        }, 200);
+        setTimeout(() => smoothScrollTo(window.location.hash), 200);
     }
     
     window.addEventListener('resize', function() {
         if (window.location.hash) {
-            setTimeout(() => {
-                adaptiveScrollToSection(window.location.hash);
-            }, 100);
-        }
-    });
-    
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            loadProductsWithShaCheck();
+            setTimeout(() => smoothScrollTo(window.location.hash), 100);
         }
     });
 });
@@ -935,10 +593,4 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (plBtn) plBtn.onclick = () => window.location.pathname = "/pl";
     if (enBtn) enBtn.onclick = () => window.location.pathname = "/en";
-});
-
-window.addEventListener('beforeunload', () => {
-    if (hourlyCacheInterval) {
-        clearInterval(hourlyCacheInterval);
-    }
 });
