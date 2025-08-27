@@ -4,7 +4,10 @@ let githubConfig = {
     branch: 'main'
 };
 
-let products = []; 
+let products = [];
+let lastETag = null;
+let lastFileSha = localStorage.getItem('lastProductsSha');
+let hourlyCacheInterval;
 
 const translations = {
     pl: {
@@ -51,7 +54,8 @@ const translations = {
         statusSoldOption: "Sprzedane",
         deleteBtn: "Usuń",
         footerText: "© 2025 SERWIS DEXTERA JACEK REITER. Serwis sprzętu sportowego w Krakowie.",
-        imageHelp: "Maksymalny rozmiar: 2MB. Obsługiwane formaty: JPG, PNG, WebP"
+        imageHelp: "Maksymalny rozmiar: 2MB. Obsługiwane formaty: JPG, PNG, WebP",
+        forceRefreshBtn: "Odśwież katalog"
     },
     en: {
         navHome: "Home",
@@ -97,13 +101,89 @@ const translations = {
         statusSoldOption: "Sold",
         deleteBtn: "Delete",
         footerText: "© 2025 DEXTER SERVICE JACEK REITER. Sports equipment service in Kraków.",
-        imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP"
+        imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP",
+        forceRefreshBtn: "Refresh catalog"
     }
 };
 
 let currentLanguage = localStorage.getItem('dexterLanguage') || 'pl';
 
-async function loadProductsFromGitHub() {
+function getHeaderOffset() {
+    const header = document.querySelector('header');
+    if (!header) return 100;
+    
+    const isMobile = window.innerWidth <= 768;
+    const baseOffset = header.offsetHeight;
+    
+    if (isMobile) {
+        return baseOffset + 40;
+    }
+    
+    return baseOffset + 20;
+}
+
+function adaptiveScrollToSection(targetId) {
+    const target = document.querySelector(targetId);
+    if (!target) return;
+    
+    const offset = getHeaderOffset();
+    const targetPosition = target.offsetTop - offset;
+    
+    window.scrollTo({
+        top: Math.max(0, targetPosition),
+        behavior: 'smooth'
+    });
+}
+
+async function smartHourlyUpdate() {
+    const repo = githubConfig.repo || 'mmiki057/dexterwebpage';
+    const now = Date.now();
+    const lastUpdate = parseInt(localStorage.getItem('lastSmartUpdate') || '0');
+    const oneHour = 3600000;
+    
+    try {
+        const headers = {
+            'Accept': 'application/vnd.github.v3+json'
+        };
+        
+        if (githubConfig.token) {
+            headers['Authorization'] = `token ${githubConfig.token}`;
+        }
+        
+        if ((now - lastUpdate) > oneHour) {
+            headers['Cache-Control'] = 'no-cache';
+            
+            const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json?_=${now}`, {
+                headers: headers,
+                cache: 'no-cache'
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const content = atob(data.content);
+                const newProducts = JSON.parse(content);
+                
+                if (JSON.stringify(products) !== JSON.stringify(newProducts)) {
+                    products = newProducts;
+                    renderPortfolio();
+                    renderProjectsList();
+                    console.log('Каталог обновлен после очистки кэша');
+                } else {
+                    console.log('Кэш очищен, но данные не изменились');
+                }
+                
+                localStorage.setItem('lastSmartUpdate', now.toString());
+            }
+        } else {
+            loadProductsWithShaCheck();
+        }
+        
+    } catch (error) {
+        console.error('Ошибка умного обновления:', error);
+    }
+}
+
+async function loadProductsWithShaCheck() {
     const repo = githubConfig.repo || 'mmiki057/dexterwebpage';
     
     try {
@@ -121,11 +201,66 @@ async function loadProductsFromGitHub() {
         
         if (response.ok) {
             const data = await response.json();
+            
+            if (data.sha === lastFileSha) {
+                console.log('Данные не изменились (SHA совпадает)');
+                return;
+            }
+            
+            lastFileSha = data.sha;
+            localStorage.setItem('lastProductsSha', data.sha);
+            
             const content = atob(data.content);
             products = JSON.parse(content);
             renderPortfolio();
             renderProjectsList();
-            console.log('Продукты загружены из GitHub');
+            console.log('Продукты обновлены из GitHub');
+        } else if (response.status === 404) {
+            products = [];
+            renderPortfolio();
+            renderProjectsList();
+            console.log('Файл products.json не найден');
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки из GitHub:', error);
+    }
+}
+
+async function loadProductsFromGitHub() {
+    const repo = githubConfig.repo || 'mmiki057/dexterwebpage';
+    const cacheBuster = Date.now();
+    
+    try {
+        const headers = {
+            'Accept': 'application/vnd.github.v3+json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        };
+        
+        if (githubConfig.token) {
+            headers['Authorization'] = `token ${githubConfig.token}`;
+        }
+
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json?_=${cacheBuster}`, {
+            headers: headers,
+            cache: 'no-cache'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const content = atob(data.content);
+            const newProducts = JSON.parse(content);
+            
+            if (JSON.stringify(products) !== JSON.stringify(newProducts)) {
+                products = newProducts;
+                renderPortfolio();
+                renderProjectsList();
+                console.log('Продукты обновлены из GitHub');
+            }
+            
+            lastFileSha = data.sha;
+            localStorage.setItem('lastProductsSha', data.sha);
         } else if (response.status === 404) {
             products = [];
             renderPortfolio();
@@ -143,6 +278,17 @@ async function loadProductsFromGitHub() {
         renderPortfolio();
         renderProjectsList();
     }
+}
+
+function forceRefreshProducts() {
+    lastETag = null;
+    lastFileSha = null;
+    localStorage.removeItem('lastProductsSha');
+    localStorage.removeItem('lastSmartUpdate');
+    
+    loadProductsFromGitHub();
+    
+    showStatus('Каталог принудительно обновлен', 'success');
 }
 
 async function saveProductsToGitHub() {
@@ -274,6 +420,8 @@ function saveGitHubConfig() {
 
 function showStatus(message, type) {
     const indicator = document.getElementById('statusIndicator');
+    if (!indicator) return;
+    
     indicator.textContent = message;
     indicator.className = `status-indicator status-${type}`;
     indicator.style.display = 'block';
@@ -284,7 +432,10 @@ function showStatus(message, type) {
 }
 
 function showLoading(show) {
-    document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = show ? 'block' : 'none';
+    }
 }
 
 function processImageFile(file) {
@@ -348,9 +499,11 @@ function changeLanguage(lang) {
     
     document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
     if (lang === 'pl') {
-        document.getElementById('langPl').classList.add('active');
+        const plBtn = document.getElementById('langPl');
+        if (plBtn) plBtn.classList.add('active');
     } else if (lang === 'en') {
-        document.getElementById('langEn').classList.add('active');
+        const enBtn = document.getElementById('langEn');
+        if (enBtn) enBtn.classList.add('active');
     }
     
     Object.keys(translations[lang]).forEach(key => {
@@ -366,6 +519,8 @@ function changeLanguage(lang) {
 
 function renderPortfolio() {
     const grid = document.getElementById('portfolioGrid');
+    if (!grid) return;
+    
     grid.innerHTML = '';
 
     products.forEach((product, index) => {
@@ -397,6 +552,8 @@ function renderPortfolio() {
 
 function renderProjectsList() {
     const list = document.getElementById('projectsList');
+    if (!list) return;
+    
     list.innerHTML = '';
 
     products.forEach((product, index) => {
@@ -443,10 +600,14 @@ function openAdminPanel() {
     const correctPassword = 'dexter2025';
     
     if (password === correctPassword) {
-        document.getElementById('adminModal').style.display = 'block';
+        const modal = document.getElementById('adminModal');
+        if (modal) modal.style.display = 'block';
         
-        document.getElementById('githubToken').value = githubConfig.token;
-        document.getElementById('githubRepo').value = githubConfig.repo;
+        const tokenInput = document.getElementById('githubToken');
+        const repoInput = document.getElementById('githubRepo');
+        
+        if (tokenInput) tokenInput.value = githubConfig.token;
+        if (repoInput) repoInput.value = githubConfig.repo;
         
         renderProjectsList();
     } else if (password !== null) {
@@ -459,7 +620,25 @@ function openAdminPanel() {
 }
 
 function closeAdminPanel() {
-    document.getElementById('adminModal').style.display = 'none';
+    const modal = document.getElementById('adminModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function addRefreshButton() {
+    const refreshButton = document.createElement('button');
+    refreshButton.textContent = translations[currentLanguage].forceRefreshBtn;
+    refreshButton.className = 'btn btn-success';
+    refreshButton.onclick = forceRefreshProducts;
+    refreshButton.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        font-size: 14px;
+        padding: 12px 16px;
+    `;
+    
+    document.body.appendChild(refreshButton);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -488,54 +667,90 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
     if (currentLanguage === 'pl') {
-        document.getElementById('langPl').classList.add('active');
+        const plBtn = document.getElementById('langPl');
+        if (plBtn) plBtn.classList.add('active');
     } else if (currentLanguage === 'en') {
-        document.getElementById('langEn').classList.add('active');
+        const enBtn = document.getElementById('langEn');
+        if (enBtn) enBtn.classList.add('active');
     }
     
     changeLanguage(currentLanguage);
-
-    loadProductsFromGitHub();
-});
-
-document.getElementById('projectForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
     
-    const title = document.getElementById('projectTitle').value;
-    const description = document.getElementById('projectDescription').value;
-    const specs = document.getElementById('projectSpecs').value.split(',').map(s => s.trim()).filter(s => s);
-    const status = document.getElementById('projectStatus').value;
-    const year = document.getElementById('projectYear').value;
-    const imagePreview = document.getElementById('imagePreview');
-    const image = imagePreview.style.display === 'block' ? imagePreview.src : null;
-
-    await addProduct({ title, description, specs, status, year, image });
+    smartHourlyUpdate();
     
-    this.reset();
-    imagePreview.style.display = 'none';
-    const successText = currentLanguage === 'pl' ? 
-        'Produkt dodany pomyślnie!' : 
-        'Product added successfully!';
-    showStatus(successText, 'success');
+    setInterval(smartHourlyUpdate, 300000);
+    
+    addRefreshButton();
+    
+    const projectForm = document.getElementById('projectForm');
+    if (projectForm) {
+        projectForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('projectTitle').value;
+            const description = document.getElementById('projectDescription').value;
+            const specs = document.getElementById('projectSpecs').value.split(',').map(s => s.trim()).filter(s => s);
+            const status = document.getElementById('projectStatus').value;
+            const year = document.getElementById('projectYear').value;
+            const imagePreview = document.getElementById('imagePreview');
+            const image = imagePreview && imagePreview.style.display === 'block' ? imagePreview.src : null;
+
+            await addProduct({ title, description, specs, status, year, image });
+            
+            this.reset();
+            if (imagePreview) imagePreview.style.display = 'none';
+            const successText = currentLanguage === 'pl' ? 
+                'Produkt dodany pomyślnie!' : 
+                'Product added successfully!';
+            showStatus(successText, 'success');
+        });
+    }
+    
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            
+            if (targetId === '#' || targetId === '#home') {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                return;
+            }
+            
+            adaptiveScrollToSection(targetId);
+            history.pushState(null, null, targetId);
+        });
+    });
+
+    if (window.location.hash) {
+        setTimeout(() => {
+            adaptiveScrollToSection(window.location.hash);
+        }, 200);
+    }
+    
+    window.addEventListener('resize', function() {
+        if (window.location.hash) {
+            setTimeout(() => {
+                adaptiveScrollToSection(window.location.hash);
+            }, 100);
+        }
+    });
+    
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            loadProductsWithShaCheck();
+        }
+    });
 });
 
 document.addEventListener('click', function(e) {
-    if (e.target === document.getElementById('adminModal')) {
+    const adminModal = document.getElementById('adminModal');
+    if (e.target === adminModal) {
         closeAdminPanel();
     }
-});
-
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -557,7 +772,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const langSwitcher = document.querySelector(".language-switcher");
 
     if (langSwitcher) langSwitcher.style.display = "block";
-
     if (adminPanel) adminPanel.style.display = "none";
 
     if (path === "/admin" || path === "/admin.html") {
@@ -568,6 +782,15 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (path === "/en" || path === "/en.html") changeLanguage("en");
     else changeLanguage(currentLanguage);
 
-    document.getElementById("langPl").onclick = () => window.location.pathname = "/pl";
-    document.getElementById("langEn").onclick = () => window.location.pathname = "/en";
+    const plBtn = document.getElementById("langPl");
+    const enBtn = document.getElementById("langEn");
+    
+    if (plBtn) plBtn.onclick = () => window.location.pathname = "/pl";
+    if (enBtn) enBtn.onclick = () => window.location.pathname = "/en";
+});
+
+window.addEventListener('beforeunload', () => {
+    if (hourlyCacheInterval) {
+        clearInterval(hourlyCacheInterval);
+    }
 });
