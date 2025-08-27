@@ -135,8 +135,135 @@ function adaptiveScrollToSection(targetId) {
     });
 }
 
+async function loadThroughProxy() {
+    const repo = githubConfig.repo;
+    
+    if (!repo) {
+        throw new Error('Репозиторий не настроен');
+    }
+    
+    const endpoints = [
+        `https://raw.githubusercontent.com/${repo}/main/products.json?t=${Date.now()}`,
+        `https://api.github.com/repos/${repo}/contents/products.json?ref=main&t=${Date.now()}`,
+        `https://github.com/${repo}/raw/main/products.json?t=${Date.now()}`
+    ];
+    
+    for (const endpoint of endpoints) {
+        try {
+            const response = await fetch(endpoint, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
+            
+            if (response.ok) {
+                let content;
+                if (endpoint.includes('api.github.com')) {
+                    const data = await response.json();
+                    content = atob(data.content);
+                } else {
+                    content = await response.text();
+                }
+                
+                products = JSON.parse(content);
+                renderPortfolio();
+                renderProjectsList();
+                console.log(`Загружено через альтернативный endpoint: ${endpoint}`);
+                return;
+            }
+        } catch (error) {
+            console.log(`Endpoint ${endpoint} не работает:`, error);
+        }
+    }
+    
+    throw new Error('Все endpoints недоступны');
+}
+
+async function loadProductsFromGitHub() {
+    const repo = githubConfig.repo;
+    
+    if (!repo) {
+        console.error('Репозиторий не настроен');
+        showStatus('Настройте репозиторий в админ панели', 'error');
+        return;
+    }
+    
+    const cacheBuster = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    try {
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+        }
+        
+        const headers = {
+            'Accept': 'application/vnd.github.v3+json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+            'Pragma': 'no-cache',
+            'Expires': '-1',
+            'If-None-Match': '',
+            'If-Modified-Since': 'Thu, 01 Jan 1970 00:00:00 GMT'
+        };
+        
+        if (githubConfig.token) {
+            headers['Authorization'] = `token ${githubConfig.token}`;
+        }
+
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json?cache=${cacheBuster}&t=${Date.now()}&r=${Math.random()}`, {
+            method: 'GET',
+            headers: headers,
+            cache: 'no-store',
+            mode: 'cors'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const content = atob(data.content);
+            const newProducts = JSON.parse(content);
+            
+            products = newProducts;
+            renderPortfolio();
+            renderProjectsList();
+            
+            console.log(`Принудительное обновление: ${new Date().toLocaleTimeString()}`);
+            console.log(`Загружено продуктов: ${products.length}`);
+            
+            lastFileSha = data.sha;
+            localStorage.setItem('lastProductsSha', data.sha);
+            localStorage.setItem('lastForceUpdate', Date.now().toString());
+            
+        } else if (response.status === 404) {
+            products = [];
+            renderPortfolio();
+            renderProjectsList();
+            console.log('Файл products.json не найден');
+        } else {
+            throw new Error(`GitHub API error: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Критическая ошибка загрузки:', error);
+        
+        try {
+            await loadThroughProxy();
+        } catch (proxyError) {
+            console.error('Прокси тоже не помог:', proxyError);
+            products = [];
+            renderPortfolio();
+            renderProjectsList();
+        }
+    }
+}
+
 async function smartHourlyUpdate() {
-    const repo = githubConfig.repo || 'mmiki057/dexterwebpage';
+    const repo = githubConfig.repo;
+    
+    if (!repo) {
+        console.error('Репозиторий не настроен');
+        return;
+    }
+    
     const now = Date.now();
     const lastUpdate = parseInt(localStorage.getItem('lastSmartUpdate') || '0');
     const oneHour = 3600000;
@@ -184,7 +311,12 @@ async function smartHourlyUpdate() {
 }
 
 async function loadProductsWithShaCheck() {
-    const repo = githubConfig.repo || 'mmiki057/dexterwebpage';
+    const repo = githubConfig.repo;
+    
+    if (!repo) {
+        console.error('Репозиторий не настроен');
+        return;
+    }
     
     try {
         const headers = {
@@ -226,58 +358,16 @@ async function loadProductsWithShaCheck() {
     }
 }
 
-async function loadProductsFromGitHub() {
-    const repo = githubConfig.repo || 'mmiki057/dexterwebpage';
-    const cacheBuster = Date.now();
+async function aggressiveUpdate() {
+    console.log('Запуск агрессивного обновления...');
     
-    try {
-        const headers = {
-            'Accept': 'application/vnd.github.v3+json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        };
-        
-        if (githubConfig.token) {
-            headers['Authorization'] = `token ${githubConfig.token}`;
-        }
-
-        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json?_=${cacheBuster}`, {
-            headers: headers,
-            cache: 'no-cache'
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            const content = atob(data.content);
-            const newProducts = JSON.parse(content);
-            
-            if (JSON.stringify(products) !== JSON.stringify(newProducts)) {
-                products = newProducts;
-                renderPortfolio();
-                renderProjectsList();
-                console.log('Продукты обновлены из GitHub');
-            }
-            
-            lastFileSha = data.sha;
-            localStorage.setItem('lastProductsSha', data.sha);
-        } else if (response.status === 404) {
-            products = [];
-            renderPortfolio();
-            renderProjectsList();
-            console.log('Файл products.json не найден');
-        } else {
-            console.warn(`GitHub API вернул ${response.status}, используем пустой массив`);
-            products = [];
-            renderPortfolio();
-            renderProjectsList();
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки из GitHub:', error);
-        products = [];
-        renderPortfolio();
-        renderProjectsList();
-    }
+    localStorage.removeItem('lastProductsSha');
+    localStorage.removeItem('lastSmartUpdate');
+    localStorage.removeItem('productsCache');
+    lastETag = null;
+    lastFileSha = null;
+    
+    await loadProductsFromGitHub();
 }
 
 function forceRefreshProducts() {
@@ -626,9 +716,21 @@ function closeAdminPanel() {
 
 function addRefreshButton() {
     const refreshButton = document.createElement('button');
-    refreshButton.textContent = translations[currentLanguage].forceRefreshBtn;
+    refreshButton.innerHTML = 'Odśwież katalog';
     refreshButton.className = 'btn btn-success';
-    refreshButton.onclick = forceRefreshProducts;
+    refreshButton.onclick = async function() {
+        this.innerHTML = 'Odświeżanie...';
+        this.disabled = true;
+        
+        await aggressiveUpdate();
+        
+        this.innerHTML = 'Odświeżono!';
+        setTimeout(() => {
+            this.innerHTML = 'Odśwież katalog';
+            this.disabled = false;
+        }, 2000);
+    };
+    
     refreshButton.style.cssText = `
         position: fixed;
         bottom: 20px;
@@ -636,6 +738,8 @@ function addRefreshButton() {
         z-index: 1000;
         font-size: 14px;
         padding: 12px 16px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     `;
     
     document.body.appendChild(refreshButton);
@@ -676,121 +780,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     changeLanguage(currentLanguage);
     
-    smartHourlyUpdate();
+    setInterval(aggressiveUpdate, 120000);
     
-    setInterval(smartHourlyUpdate, 300000);
-    
-    addRefreshButton();
-    
-    const projectForm = document.getElementById('projectForm');
-    if (projectForm) {
-        projectForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const title = document.getElementById('projectTitle').value;
-            const description = document.getElementById('projectDescription').value;
-            const specs = document.getElementById('projectSpecs').value.split(',').map(s => s.trim()).filter(s => s);
-            const status = document.getElementById('projectStatus').value;
-            const year = document.getElementById('projectYear').value;
-            const imagePreview = document.getElementById('imagePreview');
-            const image = imagePreview && imagePreview.style.display === 'block' ? imagePreview.src : null;
-
-            await addProduct({ title, description, specs, status, year, image });
-            
-            this.reset();
-            if (imagePreview) imagePreview.style.display = 'none';
-            const successText = currentLanguage === 'pl' ? 
-                'Produkt dodany pomyślnie!' : 
-                'Product added successfully!';
-            showStatus(successText, 'success');
-        });
-    }
-    
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            
-            const targetId = this.getAttribute('href');
-            
-            if (targetId === '#' || targetId === '#home') {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-                return;
-            }
-            
-            adaptiveScrollToSection(targetId);
-            history.pushState(null, null, targetId);
-        });
-    });
-
-    if (window.location.hash) {
-        setTimeout(() => {
-            adaptiveScrollToSection(window.location.hash);
-        }, 200);
-    }
-    
-    window.addEventListener('resize', function() {
-        if (window.location.hash) {
-            setTimeout(() => {
-                adaptiveScrollToSection(window.location.hash);
-            }, 100);
-        }
-    });
-    
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            loadProductsWithShaCheck();
-        }
-    });
-});
-
-document.addEventListener('click', function(e) {
-    const adminModal = document.getElementById('adminModal');
-    if (e.target === adminModal) {
-        closeAdminPanel();
-    }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-    const path = window.location.pathname.toLowerCase();
-
-    const adminRedirectPaths = [
-        '/pl/admin',
-        '/en/admin',
-        '/pl/zarzadzanie',
-        '/en/zarzadzanie'
-    ];
-
-    if (adminRedirectPaths.includes(path)) {
-        window.location.replace('/admin');
-        return;
-    }
-
-    const adminPanel = document.querySelector(".admin-panel");
-    const langSwitcher = document.querySelector(".language-switcher");
-
-    if (langSwitcher) langSwitcher.style.display = "block";
-    if (adminPanel) adminPanel.style.display = "none";
-
-    if (path === "/admin" || path === "/admin.html") {
-        if (adminPanel) adminPanel.style.display = "block";
-    }
-
-    if (path === "/pl" || path === "/pl.html") changeLanguage("pl");
-    else if (path === "/en" || path === "/en.html") changeLanguage("en");
-    else changeLanguage(currentLanguage);
-
-    const plBtn = document.getElementById("langPl");
-    const enBtn = document.getElementById("langEn");
-    
-    if (plBtn) plBtn.onclick = () => window.location.pathname = "/pl";
-    if (enBtn) enBtn.onclick = () => window.location.pathname = "/en";
-});
-
-window.addEventListener('beforeunload', () => {
-    if (hourlyCacheInterval) {
-        clearInterval(hourlyCacheInterval);
-    }
-});
+    aggressive
