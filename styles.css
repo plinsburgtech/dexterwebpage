@@ -8,11 +8,14 @@
     font-display: swap;
 }
 
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+html {
+    scroll-padding-top: 120px;
 }
 
 body {
@@ -36,7 +39,6 @@ header {
     top: 0;
     z-index: 100;
 }
-
 
 .logo {
     display: flex;
@@ -139,6 +141,7 @@ h1, h2, h3 {
     margin-left: auto;
     margin-right: auto;
 }
+
 .hero-logo {
     margin-bottom: 20px;
 }
@@ -147,16 +150,6 @@ h1, h2, h3 {
     width: 200px;
     height: auto;
     max-width: 100%;
-}
-
-@media (max-width: 768px) {
-    .hero-logo img {
-        width: 150px;
-    }
-    nav {
-    position: static;
-    transform: none;
-        }
 }
 
 .hero-cta {
@@ -179,6 +172,14 @@ h1, h2, h3 {
 .about {
     padding: 80px 0;
     background: linear-gradient(135deg, #141414, #0f0f0f);
+}
+
+.about::before {
+    content: "";
+    display: block;
+    height: 120px;
+    margin-top: -120px;
+    visibility: hidden;
 }
 
 .about-grid {
@@ -225,6 +226,14 @@ h1, h2, h3 {
 .portfolio {
     padding: 80px 0;
     background: #0a0a0a;
+}
+
+.portfolio::before {
+    content: "";
+    display: block;
+    height: 120px;
+    margin-top: -120px;
+    visibility: hidden;
 }
 
 .section-header {
@@ -335,6 +344,14 @@ h1, h2, h3 {
 .contact {
     padding: 80px 0;
     background: linear-gradient(135deg, #141414, #0f0f0f);
+}
+
+.contact::before {
+    content: "";
+    display: block;
+    height: 120px;
+    margin-top: -120px;
+    visibility: hidden;
 }
 
 .contact-info h2 {
@@ -633,9 +650,29 @@ footer {
 }
 
 @media (max-width: 768px) {
+    html {
+        scroll-padding-top: 140px;
+    }
+
+    .about::before,
+    .portfolio::before,
+    .contact::before {
+        height: 140px;
+        margin-top: -140px;
+    }
+
     .header-content {
         flex-direction: column;
-        gap: 15px;
+        gap: 10px;
+    }
+
+    .logo-icon {
+        width: 150px;
+        height: 40px;
+    }
+
+    .logo-text {
+        font-size: 28px;
     }
 
     nav {
@@ -645,17 +682,18 @@ footer {
 
     .nav-links {
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
         justify-content: center;
     }
 
     .nav-links a {
-        padding: 12px 16px;
-        border-radius: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
         background: rgba(255, 102, 0, 0.1);
-        min-height: 44px;
+        min-height: 36px;
         display: flex;
         align-items: center;
+        font-size: 14px;
     }
 
     .hero {
@@ -680,8 +718,53 @@ footer {
         font-size: 1.1rem;
     }
 
+    .about {
+        padding: 40px 0;
+    }
+
+    .about-grid {
+        display: block;
+        gap: 30px;
+    }
+
+    .about-text {
+        margin-bottom: 40px;
+    }
+
+    .about-text h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .about-text p {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 18px;
+        text-align: left;
+        padding: 0 10px;
+    }
+
+    .about-image {
+        height: 300px;
+        margin: 0 10px;
+    }
+
+    .portfolio {
+        padding: 40px 0;
+    }
+
     .portfolio-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .contact {
+        padding: 40px 0;
+    }
+
+    .contact-grid {
+        display: block;
         gap: 20px;
     }
 
@@ -690,6 +773,7 @@ footer {
         text-align: center;
         padding: 20px;
         min-height: auto;
+        margin-bottom: 20px;
     }
 
     .container {
@@ -699,16 +783,38 @@ footer {
     .language-switcher {
         top: 10px;
         right: 10px;
-        flex-direction: column;
+        flex-direction: row;
+        gap: 5px;
     }
 
     .lang-btn {
-        padding: 12px;
-        font-size: 12px;
+        padding: 8px 10px;
+        font-size: 11px;
+        min-width: 30px;
     }
 }
 
 @media (max-width: 480px) {
+    html {
+        scroll-padding-top: 160px;
+    }
+
+    .about::before,
+    .portfolio::before,
+    .contact::before {
+        height: 160px;
+        margin-top: -160px;
+    }
+
+    .logo-icon {
+        width: 120px;
+        height: 35px;
+    }
+
+    .logo-text {
+        font-size: 24px;
+    }
+
     .hero-logo img {
         width: 120px;
     }
@@ -726,8 +832,9 @@ footer {
     }
 
     .nav-links a {
-        padding: 10px 12px;
-        font-size: 0.9rem;
+        padding: 6px 10px;
+        font-size: 13px;
+        min-height: 32px;
     }
 
     .portfolio-grid {
@@ -738,5 +845,17 @@ footer {
 
     .contact-item {
         padding: 15px;
+    }
+
+    .language-switcher {
+        top: 8px;
+        right: 8px;
+        gap: 3px;
+    }
+
+    .lang-btn {
+        padding: 6px 8px;
+        font-size: 10px;
+        min-width: 28px;
     }
 }
