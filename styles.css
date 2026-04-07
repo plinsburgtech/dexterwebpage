@@ -315,6 +315,39 @@ h1, h2, h3 {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    cursor: pointer;
+}
+
+/* Thumbnail strip */
+.portfolio-thumbs {
+    display: flex;
+    gap: 4px;
+    padding: 6px 8px;
+    background: #111;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ff6600 #111;
+}
+
+.portfolio-thumbs .thumb {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.portfolio-thumbs .thumb:hover {
+    opacity: 0.9;
+}
+
+.portfolio-thumbs .thumb.active {
+    border-color: #ff6600;
+    opacity: 1;
 }
 
 .portfolio-content {
@@ -591,12 +624,49 @@ footer {
     margin-top: 5px;
 }
 
-.image-preview {
+/* Admin: image preview grid */
+.image-preview-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 10px;
-    max-width: 200px;
-    max-height: 150px;
-    border-radius: 8px;
-    display: none;
+}
+
+.preview-thumb-wrap {
+    position: relative;
+    width: 100px;
+    height: 75px;
+}
+
+.preview-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #444;
+}
+
+.preview-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #dc3545;
+    color: white;
+    border: none;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.preview-remove:hover {
+    background: #c82333;
 }
 
 .btn {
@@ -713,6 +783,82 @@ footer {
 
 .btn-cancel:hover {
     background: #5a6268;
+}
+
+/* ===== LIGHTBOX ===== */
+
+.lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+    user-select: none;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    z-index: 2001;
+    line-height: 1;
+}
+
+.lightbox-close:hover {
+    color: #ff6600;
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 102, 0, 0.3);
+    border: none;
+    color: white;
+    font-size: 28px;
+    padding: 16px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    z-index: 2001;
+    transition: background 0.2s ease;
+}
+
+.lightbox-nav:hover {
+    background: rgba(255, 102, 0, 0.6);
+}
+
+.lightbox-prev {
+    left: 20px;
+}
+
+.lightbox-next {
+    right: 20px;
+}
+
+.lightbox-counter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ccc;
+    font-size: 14px;
 }
 
 /* ===== FOCUS VISIBLE (accessibility) ===== */

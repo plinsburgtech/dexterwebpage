@@ -51,7 +51,7 @@ const translations = {
         projectNameLabel: "Nazwa produktu:",
         descriptionLabel: "Opis:",
         specsLabel: "Specyfikacje (oddzielone przecinkami):",
-        imageLabel: "Zdjęcie produktu:",
+        imageLabel: "Zdjęcia produktu:",
         statusLabel: "Status:",
         yearLabel: "Rok:",
         addBtn: "Dodaj produkt",
@@ -115,7 +115,7 @@ const translations = {
         projectNameLabel: "Product name:",
         descriptionLabel: "Description:",
         specsLabel: "Specifications (comma separated):",
-        imageLabel: "Product image:",
+        imageLabel: "Product images:",
         statusLabel: "Status:",
         yearLabel: "Year:",
         addBtn: "Add product",
@@ -330,14 +330,24 @@ function processImageFile(file) {
     });
 }
 
-async function uploadImageToGithub(productId, dataUrl) {
+async function uploadImageToGithub(productId, dataUrl, index) {
     const match = dataUrl.match(/^data:image\/(\w+);base64,(.+)$/);
     if (!match) throw new Error('Invalid image data');
     const ext = match[1] === 'jpeg' ? 'jpg' : match[1];
     const base64 = match[2];
-    const path = `images/${productId}.${ext}`;
-    await uploadFileToGithub(path, base64, `Upload image: ${productId}`);
+    const suffix = (index !== undefined && index > 0) ? `_${index}` : '';
+    const path = `images/${productId}${suffix}.${ext}`;
+    await uploadFileToGithub(path, base64, `Upload image: ${productId}${suffix}`);
     return path;
+}
+
+async function uploadMultipleImages(productId, dataUrls) {
+    const paths = [];
+    for (let i = 0; i < dataUrls.length; i++) {
+        const path = await uploadImageToGithub(productId, dataUrls[i], i);
+        paths.push(path);
+    }
+    return paths;
 }
 
 /* ===== UI HELPERS ===== */
@@ -381,12 +391,62 @@ function createEl(tag, attrs = {}, children = []) {
     return el;
 }
 
-function resolveImageSrc(product) {
-    if (!product.image) return null;
-    if (product.image.startsWith('data:')) return product.image;
-    if (product.image.startsWith('http')) return product.image;
+function resolveImagePath(path) {
+    if (!path) return null;
+    if (path.startsWith('data:')) return path;
+    if (path.startsWith('http')) return path;
     const repo = getGithubRepo() || GITHUB_REPO_DEFAULT;
-    return `https://raw.githubusercontent.com/${repo}/${GITHUB_BRANCH}/${product.image}`;
+    return `https://raw.githubusercontent.com/${repo}/${GITHUB_BRANCH}/${path}`;
+}
+
+function getProductImages(product) {
+    // Support both old `image` (string) and new `images` (array)
+    if (product.images && product.images.length > 0) {
+        return product.images.map(resolveImagePath).filter(Boolean);
+    }
+    if (product.image) {
+        const src = resolveImagePath(product.image);
+        return src ? [src] : [];
+    }
+    return [];
+}
+
+function getProductImagePaths(product) {
+    if (product.images && product.images.length > 0) return product.images;
+    if (product.image) return [product.image];
+    return [];
+}
+
+/* ===== LIGHTBOX ===== */
+
+let lightboxImages = [];
+let lightboxIndex = 0;
+
+function openLightbox(images, startIndex) {
+    lightboxImages = images;
+    lightboxIndex = startIndex || 0;
+    const overlay = document.getElementById('lightboxOverlay');
+    const img = document.getElementById('lightboxImg');
+    const counter = document.getElementById('lightboxCounter');
+    if (!overlay || !img) return;
+    img.src = lightboxImages[lightboxIndex];
+    counter.textContent = lightboxImages.length > 1 ? `${lightboxIndex + 1} / ${lightboxImages.length}` : '';
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    const overlay = document.getElementById('lightboxOverlay');
+    if (overlay) overlay.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function lightboxNav(dir) {
+    lightboxIndex = (lightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
+    const img = document.getElementById('lightboxImg');
+    const counter = document.getElementById('lightboxCounter');
+    if (img) img.src = lightboxImages[lightboxIndex];
+    if (counter) counter.textContent = lightboxImages.length > 1 ? `${lightboxIndex + 1} / ${lightboxImages.length}` : '';
 }
 
 /* ===== RENDER: PORTFOLIO (public) ===== */
@@ -399,11 +459,39 @@ function renderPortfolio() {
     products.forEach(product => {
         const statusClass = product.status === 'available' ? 'status-available' : 'status-sold';
         const statusText = product.status === 'available' ? t('statusAvailable') : t('statusSold');
-        const imgSrc = resolveImageSrc(product);
+        const images = getProductImages(product);
 
+        // Main image (first one), clickable to open lightbox
         const imageDiv = createEl('div', { className: 'portfolio-image' });
-        if (imgSrc) {
-            imageDiv.appendChild(createEl('img', { src: imgSrc, alt: product.title, loading: 'lazy' }));
+        if (images.length > 0) {
+            const mainImg = createEl('img', { src: images[0], alt: product.title, loading: 'lazy' });
+            mainImg.addEventListener('click', () => openLightbox(images, 0));
+            mainImg.style.cursor = 'pointer';
+            imageDiv.appendChild(mainImg);
+        }
+
+        // Thumbnail strip (if more than 1 image)
+        let thumbStrip = null;
+        if (images.length > 1) {
+            thumbStrip = createEl('div', { className: 'portfolio-thumbs' });
+            images.forEach((src, i) => {
+                const thumb = createEl('img', {
+                    src: src,
+                    alt: `${product.title} ${i + 1}`,
+                    className: i === 0 ? 'thumb active' : 'thumb',
+                    loading: 'lazy'
+                });
+                thumb.addEventListener('click', () => {
+                    // Update main image
+                    const mainImg = imageDiv.querySelector('img');
+                    if (mainImg) mainImg.src = src;
+                    // Update active thumb
+                    thumbStrip.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+                    thumb.classList.add('active');
+                });
+                thumb.addEventListener('dblclick', () => openLightbox(images, i));
+                thumbStrip.appendChild(thumb);
+            });
         }
 
         const specsDiv = createEl('div', { className: 'portfolio-specs' });
@@ -421,7 +509,7 @@ function renderPortfolio() {
             createEl('div', { className: `portfolio-status ${statusClass}`, textContent: statusText })
         ]);
 
-        const card = createEl('div', { className: 'portfolio-item' }, [imageDiv, contentDiv]);
+        const card = createEl('div', { className: 'portfolio-item' }, [imageDiv, thumbStrip, contentDiv]);
         grid.appendChild(card);
     });
 }
@@ -496,10 +584,21 @@ async function addProduct(data) {
     const id = generateId();
     const product = { id, ...data };
 
-    if (product.image && product.image.startsWith('data:')) {
+    // Upload new images
+    const newDataUrls = (product.images || []).filter(img => img.startsWith('data:'));
+    if (newDataUrls.length > 0) {
         showLoading(true);
         try {
-            product.image = await uploadImageToGithub(id, product.image);
+            const existingCount = (product.images || []).filter(img => !img.startsWith('data:')).length;
+            const uploadedPaths = [];
+            for (let i = 0; i < newDataUrls.length; i++) {
+                const path = await uploadImageToGithub(id, newDataUrls[i], existingCount + i);
+                uploadedPaths.push(path);
+            }
+            product.images = [
+                ...(product.images || []).filter(img => !img.startsWith('data:')),
+                ...uploadedPaths
+            ];
         } catch (err) {
             console.error('Image upload failed:', err);
             showStatus(`Image upload error: ${err.message}`, 'error');
@@ -508,6 +607,9 @@ async function addProduct(data) {
         }
         showLoading(false);
     }
+
+    // Clean up legacy field
+    delete product.image;
 
     products.push(product);
     await saveProducts(`Add product: ${product.title}`);
@@ -519,14 +621,32 @@ async function updateProduct(id, data) {
     if (idx === -1) return;
 
     const product = products[idx];
+    const oldPaths = getProductImagePaths(product);
+    const newImages = data.images || [];
 
-    if (data.image && data.image.startsWith('data:')) {
+    // Find which old images were removed
+    const keptPaths = newImages.filter(img => !img.startsWith('data:'));
+    const removedPaths = oldPaths.filter(p => !keptPaths.includes(p));
+
+    // Delete removed image files from GitHub
+    for (const path of removedPaths) {
+        if (path.startsWith('images/')) {
+            await deleteFileFromGithub(path, `Remove image for ${id}`).catch(() => {});
+        }
+    }
+
+    // Upload new images (data: URLs)
+    const newDataUrls = newImages.filter(img => img.startsWith('data:'));
+    if (newDataUrls.length > 0) {
         showLoading(true);
         try {
-            if (product.image && product.image.startsWith('images/')) {
-                await deleteFileFromGithub(product.image, `Remove old image for ${id}`).catch(() => {});
+            const uploadedPaths = [];
+            const startIdx = keptPaths.length;
+            for (let i = 0; i < newDataUrls.length; i++) {
+                const path = await uploadImageToGithub(id, newDataUrls[i], startIdx + i);
+                uploadedPaths.push(path);
             }
-            data.image = await uploadImageToGithub(id, data.image);
+            data.images = [...keptPaths, ...uploadedPaths];
         } catch (err) {
             console.error('Image upload failed:', err);
             showStatus(`Image upload error: ${err.message}`, 'error');
@@ -534,11 +654,15 @@ async function updateProduct(id, data) {
             return;
         }
         showLoading(false);
-    } else if (!data.image) {
-        data.image = product.image;
+    } else {
+        data.images = keptPaths;
     }
 
-    products[idx] = { ...product, ...data };
+    // Clean up legacy field
+    delete data.image;
+
+    products[idx] = { ...product, ...data, image: undefined };
+    delete products[idx].image;
     await saveProducts(`Update product: ${products[idx].title}`);
     render();
 }
@@ -551,8 +675,11 @@ async function removeProduct(id) {
 
     const product = products[idx];
 
-    if (product.image && product.image.startsWith('images/')) {
-        await deleteFileFromGithub(product.image, `Remove image for ${product.title}`).catch(() => {});
+    // Delete all image files from GitHub
+    for (const path of getProductImagePaths(product)) {
+        if (path.startsWith('images/')) {
+            await deleteFileFromGithub(path, `Remove image for ${product.title}`).catch(() => {});
+        }
     }
 
     products.splice(idx, 1);
@@ -594,16 +721,10 @@ function startEditProduct(id) {
 
     const imageInput = document.getElementById('projectImage');
     if (imageInput) imageInput.value = '';
-    const imagePreview = document.getElementById('imagePreview');
-    if (imagePreview) {
-        const src = resolveImageSrc(product);
-        if (src) {
-            imagePreview.src = src;
-            imagePreview.style.display = 'block';
-        } else {
-            imagePreview.style.display = 'none';
-        }
-    }
+
+    // Populate image preview grid with existing images
+    pendingImages = getProductImagePaths(product).slice();
+    renderImagePreviews();
 
     const formTitle = document.getElementById('addProjectTitle');
     const submitBtn = document.getElementById('addBtn');
@@ -622,8 +743,8 @@ function cancelEdit() {
     const form = document.getElementById('projectForm');
     if (form) form.reset();
 
-    const imagePreview = document.getElementById('imagePreview');
-    if (imagePreview) imagePreview.style.display = 'none';
+    pendingImages = [];
+    renderImagePreviews();
 
     const formTitle = document.getElementById('addProjectTitle');
     const submitBtn = document.getElementById('addBtn');
@@ -632,6 +753,34 @@ function cancelEdit() {
     if (formTitle) formTitle.textContent = t('addProjectTitle');
     if (submitBtn) submitBtn.textContent = t('addBtn');
     if (cancelBtn) cancelBtn.style.display = 'none';
+}
+
+/* ===== MULTI-IMAGE FORM ===== */
+
+let pendingImages = []; // mix of paths (existing) and data: URLs (new)
+
+function renderImagePreviews() {
+    const container = document.getElementById('imagePreviewGrid');
+    if (!container) return;
+    container.replaceChildren();
+
+    pendingImages.forEach((imgPath, i) => {
+        const src = imgPath.startsWith('data:') ? imgPath : resolveImagePath(imgPath);
+        const wrapper = createEl('div', { className: 'preview-thumb-wrap' });
+        wrapper.appendChild(createEl('img', { src, alt: `Preview ${i + 1}`, className: 'preview-thumb' }));
+        const removeBtn = createEl('button', {
+            className: 'preview-remove',
+            textContent: '\u00d7',
+            'aria-label': 'Remove image',
+            onclick: (e) => {
+                e.preventDefault();
+                pendingImages.splice(i, 1);
+                renderImagePreviews();
+            }
+        });
+        wrapper.appendChild(removeBtn);
+        container.appendChild(wrapper);
+    });
 }
 
 /* ===== ADMIN AUTH ===== */
@@ -826,23 +975,21 @@ document.addEventListener('DOMContentLoaded', function () {
         loadProducts();
     });
 
-    // Image preview on file input
+    // Image input: multiple files → add to pendingImages
     const imageInput = document.getElementById('projectImage');
-    const imagePreview = document.getElementById('imagePreview');
-    if (imageInput && imagePreview) {
-        imageInput.addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) { imagePreview.style.display = 'none'; return; }
-            processImageFile(file)
-                .then(compressed => {
-                    imagePreview.src = compressed;
-                    imagePreview.style.display = 'block';
-                })
-                .catch(err => {
+    if (imageInput) {
+        imageInput.addEventListener('change', async function () {
+            const files = Array.from(this.files);
+            for (const file of files) {
+                try {
+                    const compressed = await processImageFile(file);
+                    pendingImages.push(compressed);
+                } catch (err) {
                     alert(err);
-                    imageInput.value = '';
-                    imagePreview.style.display = 'none';
-                });
+                }
+            }
+            renderImagePreviews();
+            this.value = '';
         });
     }
 
@@ -857,21 +1004,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const specs = document.getElementById('projectSpecs').value.split(',').map(s => s.trim()).filter(Boolean);
             const status = document.getElementById('projectStatus').value;
             const year = document.getElementById('projectYear').value;
-            const preview = document.getElementById('imagePreview');
-            const hasNewImage = preview && preview.style.display === 'block' && preview.src.startsWith('data:');
-            const image = hasNewImage ? preview.src : null;
+            const images = pendingImages.slice();
 
             if (editingProductId) {
-                await updateProduct(editingProductId, { title, description, specs, status, year, image });
+                await updateProduct(editingProductId, { title, description, specs, status, year, images });
                 showStatus(t('productUpdated'), 'success');
                 cancelEdit();
             } else {
-                await addProduct({ title, description, specs, status, year, image });
+                await addProduct({ title, description, specs, status, year, images });
                 showStatus(t('productAdded'), 'success');
             }
 
             form.reset();
-            if (preview) preview.style.display = 'none';
+            pendingImages = [];
+            renderImagePreviews();
         });
     }
 
@@ -882,6 +1028,27 @@ document.addEventListener('DOMContentLoaded', function () {
     // Close modal on backdrop click
     document.addEventListener('click', function (e) {
         if (e.target === document.getElementById('adminModal')) closeAdminPanel();
+    });
+
+    // Lightbox controls
+    const lbOverlay = document.getElementById('lightboxOverlay');
+    if (lbOverlay) {
+        lbOverlay.addEventListener('click', (e) => {
+            if (e.target === lbOverlay || e.target.id === 'lightboxImg') closeLightbox();
+        });
+    }
+    const lbPrev = document.getElementById('lightboxPrev');
+    const lbNext = document.getElementById('lightboxNext');
+    const lbClose = document.getElementById('lightboxClose');
+    if (lbPrev) lbPrev.addEventListener('click', (e) => { e.stopPropagation(); lightboxNav(-1); });
+    if (lbNext) lbNext.addEventListener('click', (e) => { e.stopPropagation(); lightboxNav(1); });
+    if (lbClose) lbClose.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+        if (lbOverlay && lbOverlay.style.display === 'flex') {
+            if (e.key === 'Escape') closeLightbox();
+            else if (e.key === 'ArrowLeft') lightboxNav(-1);
+            else if (e.key === 'ArrowRight') lightboxNav(1);
+        }
     });
 
     // Smooth scroll for anchor links
