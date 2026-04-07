@@ -66,7 +66,7 @@ const translations = {
         toggleToSold: "→ Sprzedane",
         toggleToAvailable: "→ Dostępne",
         footerText: "\u00a9 2026 SERWIS DEXTERA JACEK REITER. Serwis sprzętu sportowego w Krakowie.",
-        imageHelp: "Maksymalny rozmiar: 2MB. Obsługiwane formaty: JPG, PNG, WebP",
+        imageHelp: "Maksymalny rozmiar: 15MB. Obsługiwane formaty: JPG, PNG, WebP",
         confirmDelete: "Czy na pewno chcesz usunąć ten produkt?",
         productAdded: "Produkt dodany pomyślnie!",
         productUpdated: "Produkt zaktualizowany!",
@@ -130,7 +130,7 @@ const translations = {
         toggleToSold: "\u2192 Sold",
         toggleToAvailable: "\u2192 Available",
         footerText: "\u00a9 2026 DEXTER SERVICE JACEK REITER. Sports equipment service in Krak\u00f3w.",
-        imageHelp: "Maximum size: 2MB. Supported formats: JPG, PNG, WebP",
+        imageHelp: "Maximum size: 15MB. Supported formats: JPG, PNG, WebP",
         confirmDelete: "Are you sure you want to delete this product?",
         productAdded: "Product added successfully!",
         productUpdated: "Product updated!",
@@ -297,8 +297,8 @@ async function saveProducts(commitMsg) {
 
 function processImageFile(file) {
     return new Promise((resolve, reject) => {
-        if (file.size > 2 * 1024 * 1024) {
-            reject(currentLanguage === 'pl' ? 'Plik jest zbyt duży! Maksymalny rozmiar: 2MB' : 'File is too large! Maximum size: 2MB');
+        if (file.size > 15 * 1024 * 1024) {
+            reject(currentLanguage === 'pl' ? 'Plik jest zbyt duży! Maksymalny rozmiar: 15MB' : 'File is too large! Maximum size: 15MB');
             return;
         }
         if (!file.type.startsWith('image/')) {
