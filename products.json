@@ -1,17 +1,1 @@
-[
-  {
-    "id": "0b2888b5-2bf4-4ae3-b6a3-6b7e254bf6e3",
-    "title": "Testowy produkt",
-    "description": "Testowy produkt",
-    "specs": [],
-    "status": "available",
-    "year": "2026",
-    "images": [
-      "images/0b2888b5-2bf4-4ae3-b6a3-6b7e254bf6e3.jpg",
-      "images/0b2888b5-2bf4-4ae3-b6a3-6b7e254bf6e3_1.jpg",
-      "images/0b2888b5-2bf4-4ae3-b6a3-6b7e254bf6e3_2.jpg",
-      "images/0b2888b5-2bf4-4ae3-b6a3-6b7e254bf6e3_3.jpg",
-      "images/0b2888b5-2bf4-4ae3-b6a3-6b7e254bf6e3_4.jpg"
-    ]
-  }
-]
+[]
