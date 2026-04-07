@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Dexter';
-    src: 
+    src: url('fonts/Dexter.woff2') format('woff2'),
          url('fonts/Dexter.otf') format('opentype'),
          url('fonts/Dexter.ttf') format('truetype');
     font-weight: 400;
@@ -12,10 +12,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-html {
-    scroll-padding-top: 120px;
 }
 
 body {
@@ -30,6 +26,8 @@ body {
     margin: 0 auto;
     padding: 0 20px;
 }
+
+/* ===== HEADER ===== */
 
 header {
     background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
@@ -106,6 +104,43 @@ nav {
     color: #ff6600;
 }
 
+/* ===== BURGER MENU ===== */
+
+.burger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 200;
+}
+
+.burger-line {
+    display: block;
+    width: 26px;
+    height: 3px;
+    background: #ff6600;
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.burger-btn.active .burger-line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.burger-btn.active .burger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.burger-btn.active .burger-line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* ===== HERO ===== */
+
 .hero {
     background: radial-gradient(ellipse at center, #1a1a1a, #0a0a0a);
     padding: 100px 0;
@@ -163,23 +198,19 @@ h1, h2, h3 {
     cursor: pointer;
     text-decoration: none;
     transition: transform 0.3s ease;
+    display: inline-block;
 }
 
 .hero-cta:hover {
     transform: translateY(-3px);
 }
 
+/* ===== ABOUT ===== */
+
 .about {
     padding: 80px 0;
     background: linear-gradient(135deg, #141414, #0f0f0f);
-}
-
-.about::before {
-    content: "";
-    display: block;
-    height: 120px;
-    margin-top: -120px;
-    visibility: hidden;
+    scroll-margin-top: 120px;
 }
 
 .about-grid {
@@ -223,17 +254,12 @@ h1, h2, h3 {
     object-fit: cover;
 }
 
+/* ===== PORTFOLIO ===== */
+
 .portfolio {
     padding: 80px 0;
     background: #0a0a0a;
-}
-
-.portfolio::before {
-    content: "";
-    display: block;
-    height: 120px;
-    margin-top: -120px;
-    visibility: hidden;
+    scroll-margin-top: 120px;
 }
 
 .section-header {
@@ -257,7 +283,7 @@ h1, h2, h3 {
 
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
     margin-top: 40px;
 }
@@ -341,17 +367,12 @@ h1, h2, h3 {
     color: #ff6600;
 }
 
+/* ===== CONTACT ===== */
+
 .contact {
     padding: 80px 0;
     background: linear-gradient(135deg, #141414, #0f0f0f);
-}
-
-.contact::before {
-    content: "";
-    display: block;
-    height: 120px;
-    margin-top: -120px;
-    visibility: hidden;
+    scroll-margin-top: 120px;
 }
 
 .contact-info h2 {
@@ -383,6 +404,7 @@ h1, h2, h3 {
 .contact-icon {
     width: 50px;
     height: 50px;
+    min-width: 50px;
     background: linear-gradient(135deg, #ff6600, #ff8533);
     border-radius: 10px;
     display: flex;
@@ -390,6 +412,11 @@ h1, h2, h3 {
     justify-content: center;
     color: white;
     font-size: 1.2rem;
+}
+
+.contact-icon svg {
+    width: 24px;
+    height: 24px;
 }
 
 .contact-details h4 {
@@ -407,6 +434,8 @@ h1, h2, h3 {
     text-decoration: none;
 }
 
+/* ===== FOOTER ===== */
+
 footer {
     background: #050505;
     padding: 40px 0;
@@ -422,11 +451,19 @@ footer {
     margin-bottom: 10px;
 }
 
-.language-switcher {
+/* ===== TOP BAR: language + admin ===== */
+
+.top-bar {
     position: fixed;
     top: 20px;
-    right: 150px;
+    right: 20px;
     z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.language-switcher {
     display: flex;
     gap: 5px;
 }
@@ -456,10 +493,7 @@ footer {
 }
 
 .admin-panel {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
+    display: none;
 }
 
 .admin-toggle {
@@ -471,6 +505,8 @@ footer {
     cursor: pointer;
     font-weight: 600;
 }
+
+/* ===== ADMIN MODAL ===== */
 
 .admin-modal {
     display: none;
@@ -649,20 +685,82 @@ footer {
     border: 1px solid #dc3545;
 }
 
+/* Admin: action buttons */
+.project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+.btn-toggle {
+    background: #17a2b8;
+}
+
+.btn-toggle:hover {
+    background: #138496;
+}
+
+.btn-cancel {
+    background: #6c757d;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+}
+
+/* ===== FOCUS VISIBLE (accessibility) ===== */
+
+:focus-visible {
+    outline: 2px solid #ff6600;
+    outline-offset: 2px;
+}
+
+.btn:focus-visible,
+.lang-btn:focus-visible,
+.admin-toggle:focus-visible,
+.burger-btn:focus-visible {
+    outline: 2px solid #ffaa66;
+    outline-offset: 2px;
+}
+
+.form-group input:focus-visible,
+.form-group textarea:focus-visible,
+.form-group select:focus-visible {
+    border-color: #ff6600;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.3);
+}
+
+.nav-links a:focus-visible {
+    outline: 2px solid #ff6600;
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+/* ===== REDUCED MOTION ===== */
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ===== RESPONSIVE 768px ===== */
+
 @media (max-width: 768px) {
-    html {
-        scroll-padding-top: 140px;
-    }
-
-    .about::before,
-    .portfolio::before,
-    .contact::before {
-        height: 140px;
-        margin-top: -140px;
-    }
-
     .header-content {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         gap: 10px;
     }
 
@@ -675,25 +773,45 @@ footer {
         font-size: 28px;
     }
 
+    /* Burger visible */
+    .burger-btn {
+        display: flex;
+    }
+
     nav {
-        position: static;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        max-width: 300px;
+        height: 100vh;
+        background: #1a1a1a;
+        border-left: 2px solid #ff6600;
+        transition: right 0.3s ease;
         transform: none;
+        left: auto;
+        z-index: 150;
+        padding: 80px 20px 20px;
+    }
+
+    nav.open {
+        right: 0;
     }
 
     .nav-links {
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
+        flex-direction: column;
+        gap: 0;
     }
 
     .nav-links a {
-        padding: 8px 12px;
+        padding: 16px 12px;
         border-radius: 6px;
         background: rgba(255, 102, 0, 0.1);
         min-height: 36px;
         display: flex;
         align-items: center;
-        font-size: 14px;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(255, 102, 0, 0.1);
     }
 
     .hero {
@@ -720,6 +838,7 @@ footer {
 
     .about {
         padding: 40px 0;
+        scroll-margin-top: 80px;
     }
 
     .about-grid {
@@ -752,6 +871,7 @@ footer {
 
     .portfolio {
         padding: 40px 0;
+        scroll-margin-top: 80px;
     }
 
     .portfolio-grid {
@@ -761,6 +881,7 @@ footer {
 
     .contact {
         padding: 40px 0;
+        scroll-margin-top: 80px;
     }
 
     .contact-grid {
@@ -780,11 +901,10 @@ footer {
         padding: 0 15px;
     }
 
-    .language-switcher {
+    .top-bar {
         top: 10px;
         right: 10px;
-        flex-direction: row;
-        gap: 5px;
+        gap: 8px;
     }
 
     .lang-btn {
@@ -794,18 +914,9 @@ footer {
     }
 }
 
+/* ===== RESPONSIVE 480px ===== */
+
 @media (max-width: 480px) {
-    html {
-        scroll-padding-top: 160px;
-    }
-
-    .about::before,
-    .portfolio::before,
-    .contact::before {
-        height: 160px;
-        margin-top: -160px;
-    }
-
     .logo-icon {
         width: 120px;
         height: 35px;
@@ -827,16 +938,6 @@ footer {
         font-size: 1rem;
     }
 
-    .nav-links {
-        gap: 8px;
-    }
-
-    .nav-links a {
-        padding: 6px 10px;
-        font-size: 13px;
-        min-height: 32px;
-    }
-
     .portfolio-grid {
         grid-template-columns: 1fr;
         gap: 15px;
@@ -847,10 +948,10 @@ footer {
         padding: 15px;
     }
 
-    .language-switcher {
+    .top-bar {
         top: 8px;
         right: 8px;
-        gap: 3px;
+        gap: 5px;
     }
 
     .lang-btn {

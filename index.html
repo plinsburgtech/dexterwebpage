@@ -3,41 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dexter - Custom Gunsmith Services</title>
+    <meta name="description" content="Dexter — profesjonalny serwis i kustomizacja sprzętu sportowego w Krakowie. Jacek Reiter. Indywidualne montaże, modyfikacje, najwyższa jakość rzemiosła.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://raw.githubusercontent.com; connect-src https://api.github.com">
+    <link rel="canonical" href="https://dextergunsmith.com/">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Dexter — Custom Gunsmith Services">
+    <meta property="og:description" content="Profesjonalny serwis i kustomizacja sprzętu sportowego w Krakowie. Indywidualne montaże i modyfikacje najwyższej jakości.">
+    <meta property="og:image" content="https://dextergunsmith.com/logo2.svg">
+    <meta property="og:url" content="https://dextergunsmith.com/">
+    <meta property="og:type" content="website">
+
+    <title>Dexter — Custom Gunsmith Services</title>
+    <link rel="preload" href="fonts/Dexter.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="logo2.svg" as="image">
     <link rel="stylesheet" href="/styles.css">
     <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- JSON-LD Schema.org -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Serwis Dextera Jacek Reiter",
+        "description": "Profesjonalny serwis i kustomizacja sprzętu sportowego w Krakowie.",
+        "telephone": "+48790578409",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "ul. Władysława Reymonta 22B",
+            "addressLocality": "Kraków",
+            "postalCode": "31-409",
+            "addressCountry": "PL"
+        },
+        "url": "https://dextergunsmith.com/",
+        "sameAs": ["https://www.facebook.com/Dexterkrak/"]
+    }
+    </script>
 </head>
 <body>
-    <div class="language-switcher">
-        <button class="lang-btn active" onclick="changeLanguage('pl')" id="langPl">PL</button>
-        <button class="lang-btn" onclick="changeLanguage('en')" id="langEn">EN</button>
+    <div class="top-bar" id="topBar">
+        <div class="language-switcher">
+            <button class="lang-btn active" id="langPl" aria-label="Zmień język na polski">PL</button>
+            <button class="lang-btn" id="langEn" aria-label="Switch language to English">EN</button>
+        </div>
+        <div class="admin-panel" id="adminPanelBtn">
+            <button class="admin-toggle" id="adminBtn" aria-label="Otwórz panel administracyjny">Zarządzanie</button>
+        </div>
     </div>
 
-    <div class="admin-panel">
-        <button class="admin-toggle" onclick="openAdminPanel()" id="adminBtn">Zarządzanie</button>
-    </div>
-
-    <div id="adminModal" class="admin-modal">
+    <div id="adminModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
         <div class="admin-content">
-            <button class="close-modal" onclick="closeAdminPanel()">&times;</button>
+            <button class="close-modal" id="closeModalBtn" aria-label="Zamknij panel">&times;</button>
             <h3 id="adminTitle">Zarządzanie katalogiem produktów</h3>
-            
+
             <div id="statusIndicator" class="status-indicator"></div>
-            
+
             <div class="github-config">
                 <h4 style="color: #ff6600; margin-bottom: 15px;" id="githubConfigTitle">Konfiguracja GitHub</h4>
                 <div class="form-group">
                     <label id="githubTokenLabel">GitHub Token:</label>
                     <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-                    <small id="githubTokenHelp">Потrzebny do zapisywania zmian. Utwórz CLASSIC token w GitHub Settings > Developer settings > Personal access tokens (classic) z uprawnieniami 'repo'</small>
+                    <small id="githubTokenHelp">Potrzebny do zapisywania zmian. Utwórz CLASSIC token w GitHub Settings > Developer settings > Personal access tokens (classic) z uprawnieniami 'repo'</small>
                 </div>
                 <div class="form-group">
                     <label id="githubRepoLabel">Nazwa repozytorium:</label>
                     <input type="text" id="githubRepo" placeholder="username/repository-name">
                     <small id="githubRepoHelp">Format: username/repository-name</small>
                 </div>
-                <button class="btn btn-success" onclick="testGitHubConnection()" id="testConnectionBtn">Testuj połączenie</button>
-                <button class="btn" onclick="saveGitHubConfig()" id="saveConfigBtn">Zapisz konfigurację</button>
+                <button class="btn btn-success" id="testConnectionBtn">Testuj połączenie</button>
+                <button class="btn" id="saveConfigBtn">Zapisz konfigurację</button>
             </div>
 
             <div class="project-form">
@@ -70,9 +104,10 @@
                     </div>
                     <div class="form-group">
                         <label id="yearLabel">Rok:</label>
-                        <input type="number" id="projectYear" value="2025">
+                        <input type="number" id="projectYear" value="2026">
                     </div>
                     <button type="submit" class="btn" id="addBtn">Dodaj produkt</button>
+                    <button type="button" class="btn btn-cancel" id="cancelEditBtn" style="display:none;">Anuluj</button>
                 </form>
             </div>
 
@@ -82,7 +117,7 @@
 
             <div class="current-projects">
                 <h4 style="color: #ff6600; margin-bottom: 15px;" id="currentProjectsTitle">Obecne produkty</h4>
-                <button class="btn" onclick="loadProductsFromGitHub()" id="refreshBtn">Odśwież z GitHub</button>
+                <button class="btn" id="refreshBtn">Odśwież z GitHub</button>
                 <div id="projectsList"></div>
             </div>
         </div>
@@ -98,7 +133,12 @@
                         </div>
                     </a>
                 </div>
-                <nav>
+                <button class="burger-btn" id="burgerBtn" aria-label="Otwórz menu nawigacji" aria-expanded="false">
+                    <span class="burger-line"></span>
+                    <span class="burger-line"></span>
+                    <span class="burger-line"></span>
+                </button>
+                <nav id="mainNav">
                     <ul class="nav-links">
                         <li><a href="#home" id="navHome">Strona główna</a></li>
                         <li><a href="#about" id="navAbout">O pracy</a></li>
@@ -111,15 +151,13 @@
     </header>
 
     <section id="home" class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <div class="hero-logo">
-                        <img src="logo2.svg" alt="Dexter">
-                    </div>
-                    <div class="subtitle" id="heroSubtitle">Custom Gunsmith Services</div>
-                    <p id="heroDescription">Tworzę unikalne, precyzyjne broń z dbałością o szczegóły. Każdy element jest wykonywany na zamówienie lub jako unikalne dzieło.</p>
-                    <a href="#portfolio" class="hero-cta" id="heroButton">Zobacz prace</a>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-logo">
+                    <img src="logo2.svg" alt="Dexter">
                 </div>
+                <div class="subtitle" id="heroSubtitle">Custom Gunsmith Services</div>
+                <a href="#portfolio" class="hero-cta" id="heroButton">Zobacz prace</a>
             </div>
         </div>
     </section>
@@ -144,7 +182,6 @@
         <div class="container">
             <div class="section-header">
                 <h2 id="portfolioTitle">Moje prace</h2>
-                <p id="portfolioSubtitle">Wystawa indywidualnych montaży i modyfikacji. Każdy element reprezentuje unikalne rzemiosło i dbałość o szczegóły.</p>
             </div>
             <div id="portfolio-container">
                 <div class="portfolio-grid" id="portfolioGrid"></div>
@@ -156,10 +193,12 @@
         <div class="container">
             <div class="contact-info">
                 <h2 id="contactTitle">Kontakt</h2>
-                
+
                 <div class="contact-grid">
                     <div class="contact-item">
-                        <div class="contact-icon">📱</div>
+                        <div class="contact-icon" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                        </div>
                         <div class="contact-details">
                             <h4 id="contactPhone">Telefon</h4>
                             <p><a href="tel:790578409">+48 790 578 409</a></p>
@@ -167,7 +206,9 @@
                     </div>
 
                     <div class="contact-item">
-                        <div class="contact-icon">📍</div>
+                        <div class="contact-icon" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
                         <div class="contact-details">
                             <h4 id="contactAddress">Adres</h4>
                             <p>Kraków, ul. Władysława Reymonta 22B, 31-409</p>
@@ -175,10 +216,12 @@
                     </div>
 
                     <div class="contact-item">
-                        <div class="contact-icon">👥</div>
+                        <div class="contact-icon" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5z"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                        </div>
                         <div class="contact-details">
                             <h4>Facebook</h4>
-                            <p><a href="https://www.facebook.com/Dexterkrak/" target="_blank">Dexter Kraków</a></p>
+                            <p><a href="https://www.facebook.com/Dexterkrak/" target="_blank" rel="noopener noreferrer">Dexter Kraków</a></p>
                         </div>
                     </div>
                 </div>
@@ -190,11 +233,20 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">Dexter</div>
-                <p id="footerText">© 2025 SERWIS DEXTERA JACEK REITER. Serwis sprzętu sportowego w Krakowie.</p>
+                <p id="footerText">&copy; 2026 SERWIS DEXTERA JACEK REITER. Serwis sprzętu sportowego w Krakowie.</p>
             </div>
         </div>
     </footer>
 
-    <script src="script.js?t=1735316400"></script>
+    <noscript>
+        <div style="padding: 40px; text-align: center; color: #e0e0e0; background: #0a0a0a;">
+            <h1 style="color: #ff6600;">Dexter — Custom Gunsmith Services</h1>
+            <p>Profesjonalny serwis i kustomizacja sprzętu sportowego w Krakowie.</p>
+            <p>Kontakt: +48 790 578 409 | Kraków, ul. Władysława Reymonta 22B</p>
+            <p>Ta strona wymaga JavaScript do pełnego działania.</p>
+        </div>
+    </noscript>
+
+    <script src="script.js"></script>
 </body>
 </html>
