@@ -917,7 +917,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Show/hide admin panel button based on route
     const adminPanelBtn = document.getElementById('adminPanelBtn');
-    if (adminPanelBtn) adminPanelBtn.style.display = (path === '/admin' || path === '/admin.html') ? 'block' : 'none';
+    if (adminPanelBtn) adminPanelBtn.style.display = 'block';
 
     // Language from URL
     if (path === '/pl' || path === '/pl.html') currentLanguage = 'pl';
