@@ -50,7 +50,6 @@ const translations = {
         editProjectTitle: "Edytuj produkt",
         projectNameLabel: "Nazwa produktu:",
         descriptionLabel: "Opis:",
-        specsLabel: "Specyfikacje (oddzielone przecinkami):",
         imageLabel: "Zdjęcia produktu:",
         statusLabel: "Status:",
         yearLabel: "Rok:",
@@ -114,7 +113,6 @@ const translations = {
         editProjectTitle: "Edit product",
         projectNameLabel: "Product name:",
         descriptionLabel: "Description:",
-        specsLabel: "Specifications (comma separated):",
         imageLabel: "Product images:",
         statusLabel: "Status:",
         yearLabel: "Year:",
@@ -494,18 +492,10 @@ function renderPortfolio() {
             });
         }
 
-        const specsDiv = createEl('div', { className: 'portfolio-specs' });
-        (product.specs || []).forEach(spec => {
-            specsDiv.appendChild(createEl('span', { className: 'spec-tag', textContent: spec }));
-        });
-        if (product.year) {
-            specsDiv.appendChild(createEl('span', { className: 'spec-tag', textContent: product.year }));
-        }
-
         const contentDiv = createEl('div', { className: 'portfolio-content' }, [
             createEl('div', { className: 'portfolio-title', textContent: product.title }),
             createEl('div', { className: 'portfolio-description', textContent: product.description }),
-            specsDiv,
+            product.year ? createEl('div', { className: 'portfolio-year', textContent: product.year }) : null,
             createEl('div', { className: `portfolio-status ${statusClass}`, textContent: statusText })
         ]);
 
@@ -715,7 +705,6 @@ function startEditProduct(id) {
 
     document.getElementById('projectTitle').value = product.title;
     document.getElementById('projectDescription').value = product.description;
-    document.getElementById('projectSpecs').value = (product.specs || []).join(', ');
     document.getElementById('projectStatus').value = product.status;
     document.getElementById('projectYear').value = product.year || '';
 
@@ -1001,17 +990,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const title = document.getElementById('projectTitle').value;
             const description = document.getElementById('projectDescription').value;
-            const specs = document.getElementById('projectSpecs').value.split(',').map(s => s.trim()).filter(Boolean);
             const status = document.getElementById('projectStatus').value;
             const year = document.getElementById('projectYear').value;
             const images = pendingImages.slice();
 
             if (editingProductId) {
-                await updateProduct(editingProductId, { title, description, specs, status, year, images });
+                await updateProduct(editingProductId, { title, description, status, year, images });
                 showStatus(t('productUpdated'), 'success');
                 cancelEdit();
             } else {
-                await addProduct({ title, description, specs, status, year, images });
+                await addProduct({ title, description, status, year, images });
                 showStatus(t('productAdded'), 'success');
             }
 
