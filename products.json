@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "a12e6715-5adf-4ac0-acef-27b59b449881",
+    "title": "Hi-capa 4.3",
+    "description": "Custom na bazie hi-capy 4.3. Generuje około 1,5J na kulce 0,4g. W zestawie: pistolet, dwa magazynki, tłumik. ",
+    "status": "available",
+    "year": "2026",
+    "images": [
+      "images/a12e6715-5adf-4ac0-acef-27b59b449881.jpg",
+      "images/a12e6715-5adf-4ac0-acef-27b59b449881_1.jpg",
+      "images/a12e6715-5adf-4ac0-acef-27b59b449881_2.jpg",
+      "images/a12e6715-5adf-4ac0-acef-27b59b449881_3.jpg",
+      "images/a12e6715-5adf-4ac0-acef-27b59b449881_4.jpg",
+      "images/a12e6715-5adf-4ac0-acef-27b59b449881_5.jpg",
+      "images/a12e6715-5adf-4ac0-acef-27b59b449881_6.jpg"
+    ]
+  }
+]
