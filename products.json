@@ -1,15 +1,5 @@
 [
   {
-    "id": "b39293d5-b68c-4fdf-9cc6-a0b32774755d",
-    "title": "Test",
-    "description": "рпол",
-    "status": "available",
-    "year": "2026",
-    "images": [
-      "images/b39293d5-b68c-4fdf-9cc6-a0b32774755d.jpg"
-    ]
-  },
-  {
     "id": "45e6f58b-28d0-4e5e-8110-14f9d9bca4dc",
     "title": "newtest",
     "description": "егн",
