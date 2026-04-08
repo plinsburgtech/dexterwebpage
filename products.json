@@ -84,5 +84,20 @@
       "images/e1b855fb-e917-4554-833c-fc53a8a4b140_3.jpg",
       "images/e1b855fb-e917-4554-833c-fc53a8a4b140_4.jpg"
     ]
+  },
+  {
+    "id": "665b30ea-732b-4aea-9aaa-924c2bf380b9",
+    "title": "SOCOM mk23 basic",
+    "description": "Podstawowa wersja tunningowanego SOCOMa. Baza Marui, precka, TDC, guma, zmodowane górne zawory. Około 1,4J na kulce 0,45g. Doskonały zasięg, celność i niezwykła dyskrecja w działaniu. Najlepiej czuje się w towarzystwie snajpy. ",
+    "status": "available",
+    "year": "2026",
+    "images": [
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_1.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_2.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_3.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_4.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_5.jpg"
+    ]
   }
 ]
