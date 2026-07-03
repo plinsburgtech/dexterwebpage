@@ -133,18 +133,6 @@
     ]
   },
   {
-    "id": "e0abd2b8-4ab3-4629-aaa0-b34c37d80a73",
-    "title": "Kurdupel",
-    "description": "Tunningowany S&W Bodyguard .380 od Tokyo. Wymieniona precka na dłuższą PDI, dodany adapter 14mmCCW, zmodowane górne zawory, w zestawie 3 magazynki, walizka. Zawrotne 0,6J. ",
-    "status": "sold",
-    "year": "2026",
-    "images": [
-      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73.jpg",
-      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_1.jpg",
-      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_2.jpg"
-    ]
-  },
-  {
     "id": "159d0c24-1957-4502-8be2-6ac03fca544b",
     "title": "S&W M&P9 Costa custom",
     "description": "Replika na bazie marujowego S&W M&P9. Zamek aluminiowy, lekki, Guarder, lufa precyzyjna Lambda, przyrządy celownicze stalowe Guarder, dysza Guarder, BBunit Guarder, zaworek dyszy DP, zespół kurka CCT, urządzenie powrotne CCT, język spustowy CCT, górne uszczelki magazynków NineBall. Głowica tłoczka BB mojej produkcji, zmodowane górne zawory magazynków. W zestawie dwa magazynki, wymienne grzbiety rękojeści w różnych rozmiarach i walizka. ",
@@ -157,6 +145,18 @@
       "images/159d0c24-1957-4502-8be2-6ac03fca544b_3.jpg",
       "images/159d0c24-1957-4502-8be2-6ac03fca544b_4.jpg",
       "images/159d0c24-1957-4502-8be2-6ac03fca544b_5.jpg"
+    ]
+  },
+  {
+    "id": "e0abd2b8-4ab3-4629-aaa0-b34c37d80a73",
+    "title": "Kurdupel",
+    "description": "Tunningowany S&W Bodyguard .380 od Tokyo. Wymieniona precka na dłuższą PDI, dodany adapter 14mmCCW, zmodowane górne zawory, w zestawie 3 magazynki, walizka. Zawrotne 0,6J. ",
+    "status": "sold",
+    "year": "2026",
+    "images": [
+      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73.jpg",
+      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_1.jpg",
+      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_2.jpg"
     ]
   },
   {
