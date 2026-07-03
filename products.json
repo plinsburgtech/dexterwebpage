@@ -16,19 +16,6 @@
     ]
   },
   {
-    "id": "8ed9766c-cc68-4324-a380-f711e37fac52",
-    "title": "VSR Light custom. ",
-    "description": "Lekka konfiguracja w systemie VSR. 3,2J na 0,48g, lufa zewnętrzna carbon. ",
-    "status": "sold",
-    "year": "2026",
-    "images": [
-      "images/8ed9766c-cc68-4324-a380-f711e37fac52.jpg",
-      "images/8ed9766c-cc68-4324-a380-f711e37fac52_1.jpg",
-      "images/8ed9766c-cc68-4324-a380-f711e37fac52_2.jpg",
-      "images/8ed9766c-cc68-4324-a380-f711e37fac52_3.jpg"
-    ]
-  },
-  {
     "id": "0c000a78-d125-453e-bcea-5d231290f4b3",
     "title": "USP Compact",
     "description": "Piękna replika USP Compact z pełnymi oznaczeniami oryginału. Aluminiowy zamek, stalowa lufa zewnętrzna i oczywiście powymieniane również flaki: lufa precyzyjna, BBunit, dysza. W zestawie trzy magazynki, zamienne, krótkie stopki magazynków, adapter z szyny H&K na RIS, latarka, walizka. ",
@@ -59,6 +46,32 @@
     ]
   },
   {
+    "id": "8ed9766c-cc68-4324-a380-f711e37fac52",
+    "title": "VSR Light custom. ",
+    "description": "Lekka konfiguracja w systemie VSR. 3,2J na 0,48g, lufa zewnętrzna carbon. ",
+    "status": "sold",
+    "year": "2026",
+    "images": [
+      "images/8ed9766c-cc68-4324-a380-f711e37fac52.jpg",
+      "images/8ed9766c-cc68-4324-a380-f711e37fac52_1.jpg",
+      "images/8ed9766c-cc68-4324-a380-f711e37fac52_2.jpg",
+      "images/8ed9766c-cc68-4324-a380-f711e37fac52_3.jpg"
+    ]
+  },
+  {
+    "id": "243fb1f6-e7f5-4db3-a96d-7f4c48e748b8",
+    "title": "Desert Eagle custom",
+    "description": "Na bazie oczywiście Deserta od Marui. Wymienione: szkielet, zamek, lufa zewnętrzna, element w bezpieczniku, dysza, sprężyny powrotne, przyrzady celownicze- Guarder. Lufa precyzyjna KMHead. Zmodowany górny zawór maga. Wali jak armata, wygląda jak armata. ",
+    "status": "available",
+    "year": "2026",
+    "images": [
+      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8.jpg",
+      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_1.jpg",
+      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_2.jpg",
+      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_3.jpg"
+    ]
+  },
+  {
     "id": "37cd7f04-de8b-4c06-925d-1ca9a441ea77",
     "title": "SOCOM mk23",
     "description": "Idealny kompan do pary do snajperki. Niedrogi pistolet który potrafi zadziwić osiągami. 1,4J na 0,48g i zasięg skuteczny w granicach 60m w połączeniu z niezwykle cichą pracą czyni z tej repliki coś na prawdę groźnego. Ten egzemplarz został dodatkowo wyposażony w zamek Gungnir LayLaxa i kolimator. ",
@@ -69,6 +82,21 @@
       "images/37cd7f04-de8b-4c06-925d-1ca9a441ea77_1.jpg",
       "images/37cd7f04-de8b-4c06-925d-1ca9a441ea77_2.jpg",
       "images/37cd7f04-de8b-4c06-925d-1ca9a441ea77_3.jpg"
+    ]
+  },
+  {
+    "id": "665b30ea-732b-4aea-9aaa-924c2bf380b9",
+    "title": "SOCOM mk23 basic",
+    "description": "Podstawowa wersja tunningowanego SOCOMa. Baza Marui, precka, TDC, guma, zmodowane górne zawory. Około 1,4J na kulce 0,45g. Doskonały zasięg, celność i niezwykła dyskrecja w działaniu. Najlepiej czuje się w towarzystwie snajpy. ",
+    "status": "sold",
+    "year": "2026",
+    "images": [
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_1.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_2.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_3.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_4.jpg",
+      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_5.jpg"
     ]
   },
   {
@@ -83,46 +111,6 @@
       "images/e1b855fb-e917-4554-833c-fc53a8a4b140_2.jpg",
       "images/e1b855fb-e917-4554-833c-fc53a8a4b140_3.jpg",
       "images/e1b855fb-e917-4554-833c-fc53a8a4b140_4.jpg"
-    ]
-  },
-  {
-    "id": "665b30ea-732b-4aea-9aaa-924c2bf380b9",
-    "title": "SOCOM mk23 basic",
-    "description": "Podstawowa wersja tunningowanego SOCOMa. Baza Marui, precka, TDC, guma, zmodowane górne zawory. Około 1,4J na kulce 0,45g. Doskonały zasięg, celność i niezwykła dyskrecja w działaniu. Najlepiej czuje się w towarzystwie snajpy. ",
-    "status": "available",
-    "year": "2026",
-    "images": [
-      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9.jpg",
-      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_1.jpg",
-      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_2.jpg",
-      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_3.jpg",
-      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_4.jpg",
-      "images/665b30ea-732b-4aea-9aaa-924c2bf380b9_5.jpg"
-    ]
-  },
-  {
-    "id": "e0abd2b8-4ab3-4629-aaa0-b34c37d80a73",
-    "title": "Kurdupel",
-    "description": "Tunningowany S&W Bodyguard .380 od Tokyo. Wymieniona precka na dłuższą PDI, dodany adapter 14mmCCW, zmodowane górne zawory, w zestawie 3 magazynki, walizka. Zawrotne 0,6J. ",
-    "status": "sold",
-    "year": "2026",
-    "images": [
-      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73.jpg",
-      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_1.jpg",
-      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_2.jpg"
-    ]
-  },
-  {
-    "id": "243fb1f6-e7f5-4db3-a96d-7f4c48e748b8",
-    "title": "Desert Eagle custom",
-    "description": "Na bazie oczywiście Deserta od Marui. Wymienione: szkielet, zamek, lufa zewnętrzna, element w bezpieczniku, dysza, sprężyny powrotne, przyrzady celownicze- Guarder. Lufa precyzyjna KMHead. Zmodowany górny zawór maga. Wali jak armata, wygląda jak armata. ",
-    "status": "available",
-    "year": "2026",
-    "images": [
-      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8.jpg",
-      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_1.jpg",
-      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_2.jpg",
-      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_3.jpg"
     ]
   },
   {
@@ -142,6 +130,18 @@
       "images/e3e2149e-3887-4487-911f-0a73197bc9d6_7.jpg",
       "images/e3e2149e-3887-4487-911f-0a73197bc9d6_8.jpg",
       "images/e3e2149e-3887-4487-911f-0a73197bc9d6_9.jpg"
+    ]
+  },
+  {
+    "id": "e0abd2b8-4ab3-4629-aaa0-b34c37d80a73",
+    "title": "Kurdupel",
+    "description": "Tunningowany S&W Bodyguard .380 od Tokyo. Wymieniona precka na dłuższą PDI, dodany adapter 14mmCCW, zmodowane górne zawory, w zestawie 3 magazynki, walizka. Zawrotne 0,6J. ",
+    "status": "sold",
+    "year": "2026",
+    "images": [
+      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73.jpg",
+      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_1.jpg",
+      "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_2.jpg"
     ]
   }
 ]
