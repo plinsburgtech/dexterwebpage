@@ -16,6 +16,38 @@
     ]
   },
   {
+    "id": "243fb1f6-e7f5-4db3-a96d-7f4c48e748b8",
+    "title": "Desert Eagle custom",
+    "description": "Na bazie oczywiście Deserta od Marui. Wymienione: szkielet, zamek, lufa zewnętrzna, element w bezpieczniku, dysza, sprężyny powrotne, przyrzady celownicze- Guarder. Lufa precyzyjna KMHead. Zmodowany górny zawór maga. Wali jak armata, wygląda jak armata. ",
+    "status": "available",
+    "year": "2026",
+    "images": [
+      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8.jpg",
+      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_1.jpg",
+      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_2.jpg",
+      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_3.jpg"
+    ]
+  },
+  {
+    "id": "e3e2149e-3887-4487-911f-0a73197bc9d6",
+    "title": "VSR light custom",
+    "description": "Snajperka zrobiona z nastawieniem na redukcję masy. Z komory zamkowej i szyny montażowej wyfrezowałem wszystko co dało się wyfrezować bez straty funkcjonalności repliki. Prowadnica sprężyny została przetoczona i jest pusta w środku, również dla redukcji masy. Karbonowa lufa, barrel spacer z tworzywa sztucznego zamiast alu, lekka rączka przeładowania i endcap cylindra. Dmucha 3,3J na rapaxie 2,8 (kulka 0,48g), strzela jak powinno czyli daleko i celnie. W zestawie jeden magazynek, walizka. ",
+    "status": "available",
+    "year": "2026",
+    "images": [
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6.jpg",
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_1.jpg",
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_2.jpg",
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_3.jpg",
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_4.jpg",
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_5.jpg",
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_6.jpg",
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_7.jpg",
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_8.jpg",
+      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_9.jpg"
+    ]
+  },
+  {
     "id": "0c000a78-d125-453e-bcea-5d231290f4b3",
     "title": "USP Compact",
     "description": "Piękna replika USP Compact z pełnymi oznaczeniami oryginału. Aluminiowy zamek, stalowa lufa zewnętrzna i oczywiście powymieniane również flaki: lufa precyzyjna, BBunit, dysza. W zestawie trzy magazynki, zamienne, krótkie stopki magazynków, adapter z szyny H&K na RIS, latarka, walizka. ",
@@ -56,19 +88,6 @@
       "images/8ed9766c-cc68-4324-a380-f711e37fac52_1.jpg",
       "images/8ed9766c-cc68-4324-a380-f711e37fac52_2.jpg",
       "images/8ed9766c-cc68-4324-a380-f711e37fac52_3.jpg"
-    ]
-  },
-  {
-    "id": "243fb1f6-e7f5-4db3-a96d-7f4c48e748b8",
-    "title": "Desert Eagle custom",
-    "description": "Na bazie oczywiście Deserta od Marui. Wymienione: szkielet, zamek, lufa zewnętrzna, element w bezpieczniku, dysza, sprężyny powrotne, przyrzady celownicze- Guarder. Lufa precyzyjna KMHead. Zmodowany górny zawór maga. Wali jak armata, wygląda jak armata. ",
-    "status": "available",
-    "year": "2026",
-    "images": [
-      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8.jpg",
-      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_1.jpg",
-      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_2.jpg",
-      "images/243fb1f6-e7f5-4db3-a96d-7f4c48e748b8_3.jpg"
     ]
   },
   {
@@ -114,25 +133,6 @@
     ]
   },
   {
-    "id": "e3e2149e-3887-4487-911f-0a73197bc9d6",
-    "title": "VSR light custom",
-    "description": "Snajperka zrobiona z nastawieniem na redukcję masy. Z komory zamkowej i szyny montażowej wyfrezowałem wszystko co dało się wyfrezować bez straty funkcjonalności repliki. Prowadnica sprężyny została przetoczona i jest pusta w środku, również dla redukcji masy. Karbonowa lufa, barrel spacer z tworzywa sztucznego zamiast alu, lekka rączka przeładowania i endcap cylindra. Dmucha 3,3J na rapaxie 2,8 (kulka 0,48g), strzela jak powinno czyli daleko i celnie. W zestawie jeden magazynek, walizka. ",
-    "status": "available",
-    "year": "2026",
-    "images": [
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6.jpg",
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_1.jpg",
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_2.jpg",
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_3.jpg",
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_4.jpg",
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_5.jpg",
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_6.jpg",
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_7.jpg",
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_8.jpg",
-      "images/e3e2149e-3887-4487-911f-0a73197bc9d6_9.jpg"
-    ]
-  },
-  {
     "id": "e0abd2b8-4ab3-4629-aaa0-b34c37d80a73",
     "title": "Kurdupel",
     "description": "Tunningowany S&W Bodyguard .380 od Tokyo. Wymieniona precka na dłuższą PDI, dodany adapter 14mmCCW, zmodowane górne zawory, w zestawie 3 magazynki, walizka. Zawrotne 0,6J. ",
@@ -142,6 +142,21 @@
       "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73.jpg",
       "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_1.jpg",
       "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_2.jpg"
+    ]
+  },
+  {
+    "id": "159d0c24-1957-4502-8be2-6ac03fca544b",
+    "title": "S&W M&P9 Costa custom",
+    "description": "Replika na bazie marujowego S&W M&P9. Zamek aluminiowy, lekki, Guarder, lufa precyzyjna Lambda, przyrządy celownicze stalowe Guarder, dysza Guarder, BBunit Guarder, zaworek dyszy DP, zespół kurka CCT, urządzenie powrotne CCT, język spustowy CCT, górne uszczelki magazynków NineBall. Głowica tłoczka BB mojej produkcji, zmodowane górne zawory magazynków. W zestawie dwa magazynki, wymienne grzbiety rękojeści w różnych rozmiarach i walizka. ",
+    "status": "available",
+    "year": "2026",
+    "images": [
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_1.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_2.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_3.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_4.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_5.jpg"
     ]
   }
 ]
