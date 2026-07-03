@@ -91,6 +91,21 @@
     ]
   },
   {
+    "id": "159d0c24-1957-4502-8be2-6ac03fca544b",
+    "title": "S&W M&P9 Costa custom",
+    "description": "Replika na bazie marujowego S&W M&P9. Zamek aluminiowy, lekki, Guarder, lufa precyzyjna Lambda, przyrządy celownicze stalowe Guarder, dysza Guarder, BBunit Guarder, zaworek dyszy DP, zespół kurka CCT, urządzenie powrotne CCT, język spustowy CCT, górne uszczelki magazynków NineBall. Głowica tłoczka BB mojej produkcji, zmodowane górne zawory magazynków. W zestawie dwa magazynki, wymienne grzbiety rękojeści w różnych rozmiarach i walizka. ",
+    "status": "available",
+    "year": "2026",
+    "images": [
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_1.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_2.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_3.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_4.jpg",
+      "images/159d0c24-1957-4502-8be2-6ac03fca544b_5.jpg"
+    ]
+  },
+  {
     "id": "37cd7f04-de8b-4c06-925d-1ca9a441ea77",
     "title": "SOCOM mk23",
     "description": "Idealny kompan do pary do snajperki. Niedrogi pistolet który potrafi zadziwić osiągami. 1,4J na 0,48g i zasięg skuteczny w granicach 60m w połączeniu z niezwykle cichą pracą czyni z tej repliki coś na prawdę groźnego. Ten egzemplarz został dodatkowo wyposażony w zamek Gungnir LayLaxa i kolimator. ",
@@ -101,6 +116,22 @@
       "images/37cd7f04-de8b-4c06-925d-1ca9a441ea77_1.jpg",
       "images/37cd7f04-de8b-4c06-925d-1ca9a441ea77_2.jpg",
       "images/37cd7f04-de8b-4c06-925d-1ca9a441ea77_3.jpg"
+    ]
+  },
+  {
+    "id": "577d53bd-1032-426c-b4dc-2e9d0f54d712",
+    "title": "S&W M&P9 RAL",
+    "description": "Replika na bazie marujowego S&W M&P9. Zamek aluminiowy Guarder, lufa precyzyjna Lambda, przyrządy celownicze stalowe Guarder, dysza Guarder, BBunit Guarder, zaworek dyszy CCT, zespół kurka CCT, urządzenie powrotne CCT, język spustowy CCT, górne uszczelki magazynków NineBall. Głowica tłoczka BB mojej produkcji, zmodowane górne zawory magazynków. W zestawie dwa magazynki, wymienne grzbiety rękojeści w różnych rozmiarach i walizka.",
+    "status": "available",
+    "year": "2026",
+    "images": [
+      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712.jpg",
+      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_1.jpg",
+      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_2.jpg",
+      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_3.jpg",
+      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_4.jpg",
+      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_5.jpg",
+      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_6.jpg"
     ]
   },
   {
@@ -133,21 +164,6 @@
     ]
   },
   {
-    "id": "159d0c24-1957-4502-8be2-6ac03fca544b",
-    "title": "S&W M&P9 Costa custom",
-    "description": "Replika na bazie marujowego S&W M&P9. Zamek aluminiowy, lekki, Guarder, lufa precyzyjna Lambda, przyrządy celownicze stalowe Guarder, dysza Guarder, BBunit Guarder, zaworek dyszy DP, zespół kurka CCT, urządzenie powrotne CCT, język spustowy CCT, górne uszczelki magazynków NineBall. Głowica tłoczka BB mojej produkcji, zmodowane górne zawory magazynków. W zestawie dwa magazynki, wymienne grzbiety rękojeści w różnych rozmiarach i walizka. ",
-    "status": "available",
-    "year": "2026",
-    "images": [
-      "images/159d0c24-1957-4502-8be2-6ac03fca544b.jpg",
-      "images/159d0c24-1957-4502-8be2-6ac03fca544b_1.jpg",
-      "images/159d0c24-1957-4502-8be2-6ac03fca544b_2.jpg",
-      "images/159d0c24-1957-4502-8be2-6ac03fca544b_3.jpg",
-      "images/159d0c24-1957-4502-8be2-6ac03fca544b_4.jpg",
-      "images/159d0c24-1957-4502-8be2-6ac03fca544b_5.jpg"
-    ]
-  },
-  {
     "id": "e0abd2b8-4ab3-4629-aaa0-b34c37d80a73",
     "title": "Kurdupel",
     "description": "Tunningowany S&W Bodyguard .380 od Tokyo. Wymieniona precka na dłuższą PDI, dodany adapter 14mmCCW, zmodowane górne zawory, w zestawie 3 magazynki, walizka. Zawrotne 0,6J. ",
@@ -157,22 +173,6 @@
       "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73.jpg",
       "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_1.jpg",
       "images/e0abd2b8-4ab3-4629-aaa0-b34c37d80a73_2.jpg"
-    ]
-  },
-  {
-    "id": "577d53bd-1032-426c-b4dc-2e9d0f54d712",
-    "title": "S&W M&P9 RAL",
-    "description": "Replika na bazie marujowego S&W M&P9. Zamek aluminiowy Guarder, lufa precyzyjna Lambda, przyrządy celownicze stalowe Guarder, dysza Guarder, BBunit Guarder, zaworek dyszy CCT, zespół kurka CCT, urządzenie powrotne CCT, język spustowy CCT, górne uszczelki magazynków NineBall. Głowica tłoczka BB mojej produkcji, zmodowane górne zawory magazynków. W zestawie dwa magazynki, wymienne grzbiety rękojeści w różnych rozmiarach i walizka.",
-    "status": "available",
-    "year": "2026",
-    "images": [
-      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712.jpg",
-      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_1.jpg",
-      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_2.jpg",
-      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_3.jpg",
-      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_4.jpg",
-      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_5.jpg",
-      "images/577d53bd-1032-426c-b4dc-2e9d0f54d712_6.jpg"
     ]
   }
 ]
